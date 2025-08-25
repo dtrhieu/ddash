@@ -1,5 +1,17 @@
+from pathlib import Path
+
 from fastapi import FastAPI
-from src.api import users_router, campaigns_router, tasks_router, rigs_router, wells_router, dashboard_router
+from fastapi.templating import Jinja2Templates
+
+from src.api import (
+    users_router,
+    campaigns_router,
+    tasks_router,
+    rigs_router,
+    wells_router,
+    dashboard_router,
+)
+from src.ui.routes import router as ui_router
 
 # For mock implementation, we don't need to create database tables
 # from src.database import engine, Base
@@ -11,6 +23,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
+TEMPLATE_DIR = Path(__file__).resolve().parent / "ui" / "templates"
+templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
+
 # Include API routers
 app.include_router(users_router)
 app.include_router(campaigns_router)
@@ -18,6 +33,7 @@ app.include_router(tasks_router)
 app.include_router(rigs_router)
 app.include_router(wells_router)
 app.include_router(dashboard_router)
+app.include_router(ui_router, prefix="/ui")
 
 
 @app.get("/")
