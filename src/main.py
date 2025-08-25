@@ -2,7 +2,8 @@ from datetime import date, datetime, timezone
 from enum import Enum
 from typing import Dict, List, Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException, status
+from fastapi import Depends, FastAPI, Header, HTTPException, status, Request, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field, model_validator
 
 
@@ -344,6 +345,479 @@ def dashboard(role: str = Depends(get_role)):
     }
 
 
+# --------------- UI: CRUD for Campaign, Rig, Well ---------------
+from uuid import uuid4
+
+class RigType(str, Enum):
+    jackup = "jackup"
+    semisub = "semisub"
+    drillship = "drillship"
+
+class RecordStatus(str, Enum):
+    active = "active"
+    archived = "archived"
+
+class UICampaign(BaseModel):
+    id: str
+    name: str
+    block: Optional[str] = None
+    field: Optional[str] = None
+    startDate: Optional[date] = None
+    endDate: Optional[date] = None
+    status: RecordStatus = RecordStatus.active
+    createdBy: Optional[str] = None
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class UIRig(BaseModel):
+    id: str
+    campaignId: str
+    name: str
+    type: RigType
+    lat: Optional[float] = Field(default=None, ge=-90, le=90)
+    lon: Optional[float] = Field(default=None, ge=-180, le=180)
+    status: Optional[str] = None
+    notes: Optional[str] = None
+
+class UIWell(BaseModel):
+    id: str
+    campaignId: str
+    name: str
+    status: Optional[str] = None
+    startDate: Optional[date] = None
+    endDate: Optional[date] = None
+    plannedTdM: Optional[float] = Field(default=None, gt=0)
+    actualTdM: Optional[float] = Field(default=None, ge=0)
+
+# In-memory stores
+ui_campaigns: Dict[str, UICampaign] = {}
+ui_rigs: Dict[str, UIRig] = {}
+ui_wells: Dict[str, UIWell] = {}
+
+
+def _layout(title: str, body: str) -> HTMLResponse:
+    html = f"""
+    <html><head><title>{title}</title>
+    <style>
+      body {{ font-family: sans-serif; margin: 20px; }}
+      nav a {{ margin-right: 12px; }}
+      table {{ border-collapse: collapse; margin-top: 10px; }}
+      th, td {{ border: 1px solid #ccc; padding: 6px 10px; }}
+      form {{ margin: 8px 0; }}
+      input, select, textarea {{ padding: 6px; margin: 4px; }}
+      .danger {{ color: #b00; }}
+    </style>
+    </head><body>
+      <nav>
+        <a href="/ui">Home</a>
+        <a href="/ui/campaigns">Campaigns</a>
+        <a href="/ui/rigs">Rigs</a>
+        <a href="/ui/wells">Wells</a>
+      </nav>
+      <h1>{title}</h1>
+      {body}
+    </body></html>
+    """
+    return HTMLResponse(content=html)
+
+@app.get("/ui", response_class=HTMLResponse)
+def ui_home():
+    return _layout("UI Home", "<p>Use the navigation to manage Campaigns, Rigs, and Wells.</p>")
+
+# -------- Campaign UI --------
+@app.get("/ui/campaigns", response_class=HTMLResponse)
+def ui_list_campaigns():
+    rows = "".join(
+        f"<tr><td>{c.name}</td><td>{c.block or ''}</td><td>{c.field or ''}</td><td>{c.status}</td>"
+        f"<td><a href=\"/ui/campaigns/{cid}\">View</a></td></tr>"
+        for cid, c in ui_campaigns.items()
+    )
+    body = f"""
+    <a href="/ui/campaigns/new">+ New Campaign</a>
+    <table>
+      <tr><th>Name</th><th>Block</th><th>Field</th><th>Status</th><th>Actions</th></tr>
+      {rows}
+    </table>
+    """
+    return _layout("Campaigns", body)
+
+@app.get("/ui/campaigns/new", response_class=HTMLResponse)
+def ui_new_campaign_form():
+    body = """
+    <form method="post" action="/ui/campaigns/new">
+      <label>Name <input name="name" required></label><br>
+      <label>Block <input name="block"></label><br>
+      <label>Field <input name="field"></label><br>
+      <label>Start Date <input type="date" name="startDate"></label>
+      <label>End Date <input type="date" name="endDate"></label><br>
+      <label>Status
+        <select name="status">
+          <option value="active">active</option>
+          <option value="archived">archived</option>
+        </select>
+      </label><br>
+      <button type="submit">Create</button>
+    </form>
+    """
+    return _layout("New Campaign", body)
+
+@app.post("/ui/campaigns/new")
+def ui_new_campaign(
+    name: str = Form(...),
+    block: Optional[str] = Form(None),
+    field: Optional[str] = Form(None),
+    startDate: Optional[str] = Form(None),
+    endDate: Optional[str] = Form(None),
+    status_val: str = Form(alias="status", default="active"),
+):
+    cid = str(uuid4())
+    sd = date.fromisoformat(startDate) if startDate else None
+    ed = date.fromisoformat(endDate) if endDate else None
+    ui_campaigns[cid] = UICampaign(
+        id=cid, name=name, block=block, field=field, startDate=sd, endDate=ed,
+        status=RecordStatus(status_val)
+    )
+    return RedirectResponse(url=f"/ui/campaigns/{cid}", status_code=303)
+
+@app.get("/ui/campaigns/{cid}", response_class=HTMLResponse)
+def ui_view_campaign(cid: str):
+    c = ui_campaigns.get(cid)
+    if not c:
+        return _layout("Not found", f"<p class=\"danger\">Campaign {cid} not found.</p>")
+    rigs = [r for r in ui_rigs.values() if r.campaignId == cid]
+    wells = [w for w in ui_wells.values() if w.campaignId == cid]
+    rigs_list = "<ul>" + "".join(f"<li>{r.name} ({r.type})</li>" for r in rigs) + "</ul>"
+    wells_list = "<ul>" + "".join(f"<li>{w.name}</li>" for w in wells) + "</ul>"
+    body = f"""
+      <p><b>Name:</b> {c.name}</p>
+      <p><b>Block:</b> {c.block or ''} | <b>Field:</b> {c.field or ''}</p>
+      <p><b>Status:</b> {c.status}</p>
+      <p><b>Start:</b> {c.startDate or ''} | <b>End:</b> {c.endDate or ''}</p>
+      <h3>Edit</h3>
+      <form method="post" action="/ui/campaigns/{cid}/edit">
+        <label>Name <input name="name" value="{c.name}" required></label><br>
+        <label>Block <input name="block" value="{c.block or ''}"></label><br>
+        <label>Field <input name="field" value="{c.field or ''}"></label><br>
+        <label>Start Date <input type="date" name="startDate" value="{c.startDate or ''}"></label>
+        <label>End Date <input type="date" name="endDate" value="{c.endDate or ''}"></label><br>
+        <label>Status
+          <select name="status">
+            <option value="active" {'selected' if c.status==RecordStatus.active else ''}>active</option>
+            <option value="archived" {'selected' if c.status==RecordStatus.archived else ''}>archived</option>
+          </select>
+        </label><br>
+        <button type="submit">Save</button>
+      </form>
+      <form method="post" action="/ui/campaigns/{cid}/delete" onsubmit="return confirm('Delete campaign?')">
+        <button type="submit" class="danger">Delete</button>
+      </form>
+      <h3>Rigs</h3>
+      {rigs_list}
+      <p><a href="/ui/rigs/new?campaignId={cid}">+ Add Rig</a></p>
+      <h3>Wells</h3>
+      {wells_list}
+      <p><a href="/ui/wells/new?campaignId={cid}">+ Add Well</a></p>
+    """
+    return _layout(f"Campaign: {c.name}", body)
+
+@app.post("/ui/campaigns/{cid}/edit")
+def ui_edit_campaign(cid: str,
+                     name: str = Form(...),
+                     block: Optional[str] = Form(None),
+                     field: Optional[str] = Form(None),
+                     startDate: Optional[str] = Form(None),
+                     endDate: Optional[str] = Form(None),
+                     status_val: str = Form(alias="status", default="active")):
+    c = ui_campaigns.get(cid)
+    if not c:
+        raise HTTPException(404, "Campaign not found")
+    c.name = name
+    c.block = block
+    c.field = field
+    c.startDate = date.fromisoformat(startDate) if startDate else None
+    c.endDate = date.fromisoformat(endDate) if endDate else None
+    c.status = RecordStatus(status_val)
+    c.updatedAt = datetime.now(timezone.utc)
+    ui_campaigns[cid] = c
+    return RedirectResponse(url=f"/ui/campaigns/{cid}", status_code=303)
+
+@app.post("/ui/campaigns/{cid}/delete")
+def ui_delete_campaign(cid: str):
+    # Cascade delete rigs and wells that belong to this campaign
+    to_del_r = [rid for rid, r in ui_rigs.items() if r.campaignId == cid]
+    to_del_w = [wid for wid, w in ui_wells.items() if w.campaignId == cid]
+    for rid in to_del_r: ui_rigs.pop(rid, None)
+    for wid in to_del_w: ui_wells.pop(wid, None)
+    ui_campaigns.pop(cid, None)
+    return RedirectResponse(url="/ui/campaigns", status_code=303)
+
+# -------- Rig UI --------
+@app.get("/ui/rigs", response_class=HTMLResponse)
+def ui_list_rigs():
+    def camp_name(cid: str) -> str:
+        c = ui_campaigns.get(cid)
+        return c.name if c else "?"
+    rows = "".join(
+        f"<tr><td>{r.name}</td><td>{r.type}</td><td>{camp_name(r.campaignId)}</td>"
+        f"<td><a href=\"/ui/rigs/{rid}\">View</a></td></tr>"
+        for rid, r in ui_rigs.items()
+    )
+    body = f"""
+    <a href="/ui/rigs/new">+ New Rig</a>
+    <table>
+      <tr><th>Name</th><th>Type</th><th>Campaign</th><th>Actions</th></tr>
+      {rows}
+    </table>
+    """
+    return _layout("Rigs", body)
+
+@app.get("/ui/rigs/new", response_class=HTMLResponse)
+def ui_new_rig_form(campaignId: Optional[str] = None):
+    options = "".join(
+        f"<option value=\"{cid}\" {'selected' if campaignId==cid else ''}>{c.name}</option>"
+        for cid, c in ui_campaigns.items()
+    )
+    body = f"""
+    <form method="post" action="/ui/rigs/new">
+      <label>Campaign
+        <select name="campaignId" required>{options}</select>
+      </label><br>
+      <label>Name <input name="name" required></label>
+      <label>Type
+        <select name="type">
+          <option value="jackup">jackup</option>
+          <option value="semisub">semisub</option>
+          <option value="drillship">drillship</option>
+        </select>
+      </label><br>
+      <label>Lat <input type="number" step="0.000001" name="lat"></label>
+      <label>Lon <input type="number" step="0.000001" name="lon"></label><br>
+      <label>Status <input name="status"></label><br>
+      <label>Notes <textarea name="notes"></textarea></label><br>
+      <button type="submit">Create</button>
+    </form>
+    """
+    return _layout("New Rig", body)
+
+@app.post("/ui/rigs/new")
+def ui_new_rig(
+    campaignId: str = Form(...),
+    name: str = Form(...),
+    type_val: str = Form(..., alias="type"),
+    lat: Optional[str] = Form(None),
+    lon: Optional[str] = Form(None),
+    status_text: Optional[str] = Form(alias="status", default=None),
+    notes: Optional[str] = Form(None),
+):
+    if campaignId not in ui_campaigns:
+        raise HTTPException(400, "Invalid campaignId")
+    rid = str(uuid4())
+    ui_rigs[rid] = UIRig(
+        id=rid,
+        campaignId=campaignId,
+        name=name,
+        type=RigType(type_val),
+        lat=float(lat) if lat else None,
+        lon=float(lon) if lon else None,
+        status=status_text,
+        notes=notes,
+    )
+    return RedirectResponse(url=f"/ui/rigs/{rid}", status_code=303)
+
+@app.get("/ui/rigs/{rid}", response_class=HTMLResponse)
+def ui_view_rig(rid: str):
+    r = ui_rigs.get(rid)
+    if not r:
+        return _layout("Not found", f"<p class=\"danger\">Rig {rid} not found.</p>")
+    options = "".join(
+        f"<option value=\"{cid}\" {'selected' if cid==r.campaignId else ''}>{c.name}</option>"
+        for cid, c in ui_campaigns.items()
+    )
+    body = f"""
+      <p><b>Name:</b> {r.name} | <b>Type:</b> {r.type}</p>
+      <p><b>Campaign:</b> {ui_campaigns.get(r.campaignId).name if ui_campaigns.get(r.campaignId) else '?'}</p>
+      <p><b>Lat/Lon:</b> {r.lat or ''} , {r.lon or ''}</p>
+      <p><b>Status:</b> {r.status or ''}</p>
+      <p><b>Notes:</b> {r.notes or ''}</p>
+      <h3>Edit</h3>
+      <form method="post" action="/ui/rigs/{rid}/edit">
+        <label>Campaign <select name="campaignId" required>{options}</select></label><br>
+        <label>Name <input name="name" value="{r.name}" required></label>
+        <label>Type
+          <select name="type">
+            <option value="jackup" {'selected' if r.type==RigType.jackup else ''}>jackup</option>
+            <option value="semisub" {'selected' if r.type==RigType.semisub else ''}>semisub</option>
+            <option value="drillship" {'selected' if r.type==RigType.drillship else ''}>drillship</option>
+          </select>
+        </label><br>
+        <label>Lat <input type="number" step="0.000001" name="lat" value="{r.lat or ''}"></label>
+        <label>Lon <input type="number" step="0.000001" name="lon" value="{r.lon or ''}"></label><br>
+        <label>Status <input name="status" value="{r.status or ''}"></label><br>
+        <label>Notes <textarea name="notes">{r.notes or ''}</textarea></label><br>
+        <button type="submit">Save</button>
+      </form>
+      <form method="post" action="/ui/rigs/{rid}/delete" onsubmit="return confirm('Delete rig?')">
+        <button type="submit" class="danger">Delete</button>
+      </form>
+    """
+    return _layout(f"Rig: {r.name}", body)
+
+@app.post("/ui/rigs/{rid}/edit")
+def ui_edit_rig(rid: str,
+                campaignId: str = Form(...),
+                name: str = Form(...),
+                type_val: str = Form(..., alias="type"),
+                lat: Optional[str] = Form(None),
+                lon: Optional[str] = Form(None),
+                status_text: Optional[str] = Form(alias="status", default=None),
+                notes: Optional[str] = Form(None)):
+    r = ui_rigs.get(rid)
+    if not r:
+        raise HTTPException(404, "Rig not found")
+    if campaignId not in ui_campaigns:
+        raise HTTPException(400, "Invalid campaignId")
+    r.campaignId = campaignId
+    r.name = name
+    r.type = RigType(type_val)
+    r.lat = float(lat) if lat else None
+    r.lon = float(lon) if lon else None
+    r.status = status_text
+    r.notes = notes
+    ui_rigs[rid] = r
+    return RedirectResponse(url=f"/ui/rigs/{rid}", status_code=303)
+
+@app.post("/ui/rigs/{rid}/delete")
+def ui_delete_rig(rid: str):
+    ui_rigs.pop(rid, None)
+    return RedirectResponse(url="/ui/rigs", status_code=303)
+
+# -------- Well UI --------
+@app.get("/ui/wells", response_class=HTMLResponse)
+def ui_list_wells():
+    def camp_name(cid: str) -> str:
+        c = ui_campaigns.get(cid)
+        return c.name if c else "?"
+    rows = "".join(
+        f"<tr><td>{w.name}</td><td>{camp_name(w.campaignId)}</td>"
+        f"<td><a href=\"/ui/wells/{wid}\">View</a></td></tr>"
+        for wid, w in ui_wells.items()
+    )
+    body = f"""
+    <a href="/ui/wells/new">+ New Well</a>
+    <table>
+      <tr><th>Name</th><th>Campaign</th><th>Actions</th></tr>
+      {rows}
+    </table>
+    """
+    return _layout("Wells", body)
+
+@app.get("/ui/wells/new", response_class=HTMLResponse)
+def ui_new_well_form(campaignId: Optional[str] = None):
+    options = "".join(
+        f"<option value=\"{cid}\" {'selected' if campaignId==cid else ''}>{c.name}</option>"
+        for cid, c in ui_campaigns.items()
+    )
+    body = f"""
+    <form method="post" action="/ui/wells/new">
+      <label>Campaign <select name="campaignId" required>{options}</select></label><br>
+      <label>Name <input name="name" required></label><br>
+      <label>Status <input name="status"></label><br>
+      <label>Start Date <input type="date" name="startDate"></label>
+      <label>End Date <input type="date" name="endDate"></label><br>
+      <label>Planned TD (m) <input type="number" step="0.01" name="plannedTdM"></label>
+      <label>Actual TD (m) <input type="number" step="0.01" name="actualTdM"></label><br>
+      <button type="submit">Create</button>
+    </form>
+    """
+    return _layout("New Well", body)
+
+@app.post("/ui/wells/new")
+def ui_new_well(
+    campaignId: str = Form(...),
+    name: str = Form(...),
+    status_text: Optional[str] = Form(alias="status", default=None),
+    startDate: Optional[str] = Form(None),
+    endDate: Optional[str] = Form(None),
+    plannedTdM: Optional[str] = Form(None),
+    actualTdM: Optional[str] = Form(None),
+):
+    if campaignId not in ui_campaigns:
+        raise HTTPException(400, "Invalid campaignId")
+    wid = str(uuid4())
+    ui_wells[wid] = UIWell(
+        id=wid,
+        campaignId=campaignId,
+        name=name,
+        status=status_text,
+        startDate=date.fromisoformat(startDate) if startDate else None,
+        endDate=date.fromisoformat(endDate) if endDate else None,
+        plannedTdM=float(plannedTdM) if plannedTdM else None,
+        actualTdM=float(actualTdM) if actualTdM else None,
+    )
+    return RedirectResponse(url=f"/ui/wells/{wid}", status_code=303)
+
+@app.get("/ui/wells/{wid}", response_class=HTMLResponse)
+def ui_view_well(wid: str):
+    w = ui_wells.get(wid)
+    if not w:
+        return _layout("Not found", f"<p class=\"danger\">Well {wid} not found.</p>")
+    options = "".join(
+        f"<option value=\"{cid}\" {'selected' if cid==w.campaignId else ''}>{c.name}</option>"
+        for cid, c in ui_campaigns.items()
+    )
+    body = f"""
+      <p><b>Name:</b> {w.name}</p>
+      <p><b>Campaign:</b> {ui_campaigns.get(w.campaignId).name if ui_campaigns.get(w.campaignId) else '?'}</p>
+      <p><b>Status:</b> {w.status or ''}</p>
+      <p><b>Dates:</b> {w.startDate or ''} - {w.endDate or ''}</p>
+      <p><b>TD (m):</b> planned {w.plannedTdM or ''} | actual {w.actualTdM or ''}</p>
+      <h3>Edit</h3>
+      <form method="post" action="/ui/wells/{wid}/edit">
+        <label>Campaign <select name="campaignId" required>{options}</select></label><br>
+        <label>Name <input name="name" value="{w.name}" required></label><br>
+        <label>Status <input name="status" value="{w.status or ''}"></label><br>
+        <label>Start Date <input type="date" name="startDate" value="{w.startDate or ''}"></label>
+        <label>End Date <input type="date" name="endDate" value="{w.endDate or ''}"></label><br>
+        <label>Planned TD (m) <input type="number" step="0.01" name="plannedTdM" value="{w.plannedTdM or ''}"></label>
+        <label>Actual TD (m) <input type="number" step="0.01" name="actualTdM" value="{w.actualTdM or ''}"></label><br>
+        <button type="submit">Save</button>
+      </form>
+      <form method="post" action="/ui/wells/{wid}/delete" onsubmit="return confirm('Delete well?')">
+        <button type="submit" class="danger">Delete</button>
+      </form>
+    """
+    return _layout(f"Well: {w.name}", body)
+
+@app.post("/ui/wells/{wid}/edit")
+def ui_edit_well(wid: str,
+                 campaignId: str = Form(...),
+                 name: str = Form(...),
+                 status_text: Optional[str] = Form(alias="status", default=None),
+                 startDate: Optional[str] = Form(None),
+                 endDate: Optional[str] = Form(None),
+                 plannedTdM: Optional[str] = Form(None),
+                 actualTdM: Optional[str] = Form(None)):
+    w = ui_wells.get(wid)
+    if not w:
+        raise HTTPException(404, "Well not found")
+    if campaignId not in ui_campaigns:
+        raise HTTPException(400, "Invalid campaignId")
+    w.campaignId = campaignId
+    w.name = name
+    w.status = status_text
+    w.startDate = date.fromisoformat(startDate) if startDate else None
+    w.endDate = date.fromisoformat(endDate) if endDate else None
+    w.plannedTdM = float(plannedTdM) if plannedTdM else None
+    w.actualTdM = float(actualTdM) if actualTdM else None
+    ui_wells[wid] = w
+    return RedirectResponse(url=f"/ui/wells/{wid}", status_code=303)
+
+@app.post("/ui/wells/{wid}/delete")
+def ui_delete_well(wid: str):
+    ui_wells.pop(wid, None)
+    return RedirectResponse(url="/ui/wells", status_code=303)
+
+
 # --------------- Seed Data ---------------
 @app.on_event("startup")
 def seed():
@@ -363,6 +837,11 @@ def seed():
         tid2 = tasks.add(t2)
         tasks.get(tid2).id = tid2
         tasks.update(tid2, tasks.get(tid2))
+
+    # Seed UI domain with one campaign
+    if not ui_campaigns:
+        seed_cid = str(uuid4())
+        ui_campaigns[seed_cid] = UICampaign(id=seed_cid, name="Delta Campaign", status=RecordStatus.active)
 
 
 # To run locally:
