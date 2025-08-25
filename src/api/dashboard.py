@@ -1,24 +1,22 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from src.database import get_db
-from src.services.campaign_service import get_campaigns, get_campaign_progress, get_campaign_days_elapsed, get_campaign_status
-from src.services.rig_service import get_rigs
+from fastapi import APIRouter
+from src.services.mock_services import get_campaigns, get_campaign_progress, get_campaign_days_elapsed, get_campaign_status, get_rigs
 from typing import List, Dict, Any
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
 @router.get("/overview")
-def get_dashboard_overview(db: Session = Depends(get_db)):
+def get_dashboard_overview():
+    # For mock implementation, we don't actually use a database session
     # Get all campaigns
-    campaigns = get_campaigns(db)
+    campaigns = get_campaigns(None)
     
     # Calculate overview metrics
     total_campaigns = len(campaigns)
     active_campaigns = [c for c in campaigns if get_campaign_status(c) != "Completed"]
     
     # Get rig information
-    rigs = get_rigs(db)
+    rigs = get_rigs(None)
     
     # Prepare rig status data
     rig_status_data = []
@@ -52,8 +50,9 @@ def get_dashboard_overview(db: Session = Depends(get_db)):
 
 
 @router.get("/kpis")
-def get_kpi_data(db: Session = Depends(get_db)):
-    campaigns = get_campaigns(db)
+def get_kpi_data():
+    # For mock implementation, we don't actually use a database session
+    campaigns = get_campaigns(None)
     
     kpi_data = []
     for campaign in campaigns:
@@ -69,7 +68,7 @@ def get_kpi_data(db: Session = Depends(get_db)):
 
 
 @router.get("/alerts")
-def get_alerts(db: Session = Depends(get_db)):
+def get_alerts():
     # This is a placeholder for alert functionality
     # In a real implementation, this would check for:
     # - Overdue tasks

@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from src.api import users_router, campaigns_router, tasks_router, rigs_router, wells_router, dashboard_router
-from src.database import engine, Base
-from src.auth import admin_required, ops_manager_required, engineer_required
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# For mock implementation, we don't need to create database tables
+# from src.database import engine, Base
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Drilling Campaign Management System",
