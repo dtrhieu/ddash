@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}DDash{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="/ui/">Home</a>
+        <a href="/ui/about">About</a>
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
