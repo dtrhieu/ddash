@@ -196,7 +196,7 @@ Frontend routes (planned):
 
 - Local dev authentication: session cookie and CSRF for simplicity; can swap to JWT later if needed.
 - Visibility: keep this TODO evolving; add dates/owners when tasks start.
-- Link back to spec for details: [docs/SPEC-002-Drilling Campaign Tracker.md](docs/SPEC-002-Drilling Campaign Tracker.md)
+- Link back to spec for details: [docs/SPEC-002-Drilling Campaign Tracker.md](docs/SPEC-002-Drilling%20Campaign%20Tracker.md)
 
 ## Quick next actions
 
