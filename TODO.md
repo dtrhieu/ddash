@@ -57,8 +57,8 @@ Key planned files:
 - [x] M1.1.3 Add and configure django-cors-headers; set TIME_ZONE=UTC and USE_TZ=True [backend/app/settings.py](backend/app/settings.py)
 - [x] M1.1.4 Configure Postgres and Redis via env vars in settings; add backend/.env.example with local defaults [backend/app/settings.py](backend/app/settings.py)
 - [x] M1.1.5 Introduce pip-tools: add backend/requirements.in and requirements-dev.in; compile to requirements.txt and requirements-dev.txt
-- [ ] M1.1.6 Implement /api/health endpoint and wire it in urls for smoke testing [backend/app/urls.py](backend/app/urls.py)
-- [ ] M1.1.7 Run initial migrations and verify runserver boots locally
+- [x] M1.1.6 Implement /api/health endpoint and wire it in urls for smoke testing [backend/app/urls.py](backend/app/urls.py)
+- [x] M1.1.7 Run initial migrations and verify runserver boots locally
 
 ### M1.2 — Base apps and data model (domain entities)
 
@@ -196,7 +196,7 @@ Frontend routes (planned):
 
 - Local dev authentication: session cookie and CSRF for simplicity; can swap to JWT later if needed.
 - Visibility: keep this TODO evolving; add dates/owners when tasks start.
-- Link back to spec for details: [doc/SPEC-002-Drilling Campaign Tracker.md](doc/SPEC-002-Drilling Campaign Tracker.md)
+- Link back to spec for details: [docs/SPEC-002-Drilling Campaign Tracker.md](docs/SPEC-002-Drilling Campaign Tracker.md)
 
 ## Quick next actions
 
