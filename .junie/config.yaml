@@ -1,0 +1,12 @@
+# Junie project configuration
+# Enforce using the repository-local virtualenv Python interpreter
+# Junie will prefer the first existing path.
+python:
+  interpreters:
+    - .venv/bin/python
+    - .venv/Scripts/python.exe
+  required: true
+
+# Optional: default test command for this repo (uses the configured python)
+commands:
+  test: "-m unittest backend.tests.test_engine -v"
