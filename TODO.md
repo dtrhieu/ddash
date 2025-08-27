@@ -114,10 +114,41 @@ Planned functions:
 
 ### M6 — Frontend scaffold
 
-- [ ] Vite + React + TypeScript app [frontend/src/main.tsx](frontend/src/main.tsx)
-- [ ] API client with fetch wrapper, auth handling, error mapping
-- [ ] Routing and protected routes by role
-- [ ] Authentication UI (login/logout), session storage, CSRF handling
+#### M6.1 — Project Setup
+- [x] M6.1.1 Set up Vite + React + TypeScript project with package.json and dependencies
+- [x] M6.1.2 Configure Vite build system and development server
+- [x] M6.1.3 Set up project structure with components, hooks, utils, and types directories
+
+#### M6.2 — API Client & Auth
+- [ ] M6.2.1 Create API client with fetch wrapper and base configuration
+- [ ] M6.2.2 Implement authentication handling (login/logout/session management)
+- [ ] M6.2.3 Add error mapping and response handling utilities
+- [ ] M6.2.4 Create TypeScript types for API responses and requests
+
+#### M6.3 — Routing & Protection
+- [ ] M6.3.1 Set up React Router for navigation
+- [ ] M6.3.2 Implement protected routes with role-based access control
+- [ ] M6.3.3 Create route guards and authentication checks
+
+#### M6.4 — Authentication UI
+- [ ] M6.4.1 Create login page component with form validation
+- [ ] M6.4.2 Implement logout functionality and session cleanup
+- [ ] M6.4.3 Add loading states and error handling for auth flows
+
+#### M6.5 — Session & Security
+- [ ] M6.5.1 Implement session storage for authentication tokens
+- [ ] M6.5.2 Add CSRF token handling for API requests
+- [ ] M6.5.3 Create authentication context/provider for global state management
+
+#### M6.6 — Integration & Layout
+- [ ] M6.6.1 Update main.tsx to use router and authentication provider
+- [ ] M6.6.2 Connect existing Gantt and Sheet pages to the routing system
+- [ ] M6.6.3 Add navigation layout with role-based menu items
+
+#### M6.7 — Testing & Verification
+- [ ] M6.7.1 Test complete authentication flow (login → protected routes → logout)
+- [ ] M6.7.2 Verify API client integration with backend endpoints
+- [ ] M6.7.3 Ensure proper error handling and user feedback throughout the app
 
 ### M7 — UI Features
 

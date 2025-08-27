@@ -29,9 +29,9 @@ repos:
     hooks:
       - id: eslint
         files: ^frontend/.*\.(ts|tsx|js|jsx)$
+        args: [--config, frontend/eslint.config.js]
         additional_dependencies:
-          - "eslint@9"
-          - "typescript@5"
-          - "@typescript-eslint/parser@7"
-          - "@typescript-eslint/eslint-plugin@7"
-          - "eslint-config-prettier@9"
+          - "eslint@^9.34.0"
+          - "typescript@^5.2.2"
+          - "@typescript-eslint/parser@^8.41.0"
+          - "@typescript-eslint/eslint-plugin@^8.41.0"
