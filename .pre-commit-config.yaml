@@ -30,16 +30,8 @@ repos:
       - id: eslint
         files: ^frontend/.*\.(ts|tsx|js|jsx)$
         additional_dependencies:
-          - eslint@9
-          - typescript@5
-          - @typescript-eslint/parser@7
-          - @typescript-eslint/eslint-plugin@7
-          - eslint-config-prettier@9
-
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.3.3
-    hooks:
-      - id: prettier
-        files: ^frontend/.*\.(ts|tsx|js|jsx|json|css|scss|md)$
-        additional_dependencies:
-          - prettier@3
+          - "eslint@9"
+          - "typescript@5"
+          - "@typescript-eslint/parser@7"
+          - "@typescript-eslint/eslint-plugin@7"
+          - "eslint-config-prettier@9"

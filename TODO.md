@@ -50,25 +50,26 @@ Key planned files:
 - [x] Decide dependency tooling: pip-tools for backend; pnpm or npm for frontend
 - [x] Create base repo structure as above
 
-### M1 — Backend bootstrap
+### M1.1 — Backend project bootstrap (framework and runtime)
 
-- [ ] Create Django 5.2 project [backend/manage.py](backend/manage.py)
-- [ ] Add DRF, CORS, Timezone=UTC, JSON renderer defaults
-- [ ] Configure Postgres and Redis settings via env
-- [ ] Create base app modules: users, core, scheduling, calc
-- [ ] Create initial superuser for local testing
+- [ ] M1.1.1 Create Django 5.2 project "app" with manage.py, settings, urls, asgi, wsgi in backend [backend/manage.py](backend/manage.py)
+- [ ] M1.1.2 Add DRF to INSTALLED_APPS and set default JSON renderer in settings [backend/app/settings.py](backend/app/settings.py)
+- [ ] M1.1.3 Add and configure django-cors-headers; set TIME_ZONE=UTC and USE_TZ=True [backend/app/settings.py](backend/app/settings.py)
+- [ ] M1.1.4 Configure Postgres and Redis via env vars in settings; add backend/.env.example with local defaults [backend/app/settings.py](backend/app/settings.py)
+- [ ] M1.1.5 Introduce pip-tools: add backend/requirements.in and requirements-dev.in; compile to requirements.txt and requirements-dev.txt
+- [ ] M1.1.6 Implement /api/health endpoint and wire it in urls for smoke testing [backend/app/urls.py](backend/app/urls.py)
+- [ ] M1.1.7 Run initial migrations and verify runserver boots locally
 
-Data model (per spec):
-- [ ] User with role enum
-- [ ] Rig(name unique, day_rate, status)
-- [ ] Well(name unique, field, type)
-- [ ] Scenario(name, status, created_by, created_at)
-- [ ] Campaign(name, start_date, end_date, scenario_id)
-- [ ] CampaignWell(campaign_id, well_id, rig_id, planned/actual dates, dependencies jsonb)
-- [ ] CalcRun(scenario_id, status, params jsonb, results jsonb, created_by, timestamps)
-- [ ] AuditLog(user_id, entity, entity_id, action, before jsonb, after jsonb, at)
-- [ ] Create migrations and apply
-- [ ] Add DB indexes: (campaign_id, planned_start), GIN(dependencies), btree(name)
+### M1.2 — Base apps and data model (domain entities)
+
+- [ ] M1.2.1 Create Django apps: users, core, scheduling, calc
+- [ ] M1.2.2 Implement models per spec: User(role enum), Rig, Well, Scenario, Campaign, CampaignWell, CalcRun, AuditLog
+- [ ] M1.2.3 Add DB indexes and constraints: btree(name), composite (campaign_id, planned_start), GIN on dependencies jsonb
+- [ ] M1.2.4 Make and apply initial migrations
+- [ ] M1.2.5 Register models in Django admin for visibility
+- [ ] M1.2.6 Create initial superuser for local testing
+- [ ] M1.2.7 Seed minimal sample fixtures for rigs/wells/campaign-wells
+- [ ] M1.2.8 Smoke test via Django shell to create/list entities and validate constraints
 
 ### M2 — AuthZ and Audit
 
