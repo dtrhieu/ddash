@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.coverage
+dist/
+build/
+
+# Node/Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+frontend/dist/
+frontend/.vite/
+frontend/.parcel-cache/
+
+# Editors
+.vscode/
+.idea/
