@@ -152,24 +152,51 @@ Planned functions:
 
 ### M7 — UI Features
 
-Sheet View:
-- [ ] AG Grid with columns: rig, well, planned_start/end, duration, cost
-- [ ] CRUD with inline validation; undo/redo; multi-row paste
-- [ ] Optimistic updates with server reconciliation
+#### M7.1 — Sheet View Implementation
+- [x] M7.1.1 Set up AG Grid component with basic configuration and data source
+- [x] M7.1.2 Configure columns: rig, well, planned_start/end, duration, cost with proper formatting
+  - Implemented: AG Grid Community with sorting, filtering, pagination, date/currency formatting, calculated duration and cost columns
+- [ ] M7.1.3 Implement Create operations (add new rows/campaign-wells)
+- [ ] M7.1.4 Implement Read operations (display data with sorting/filtering)
+- [ ] M7.1.5 Implement Update operations (inline editing)
+- [ ] M7.1.6 Implement Delete operations (remove rows with confirmation)
+- [ ] M7.1.7 Add inline validation for data entry (required fields, date formats, numeric ranges)
+- [ ] M7.1.8 Implement undo/redo functionality with state management
+- [ ] M7.1.9 Add multi-row paste support with data parsing
+- [ ] M7.1.10 Implement optimistic updates for better UX
+- [ ] M7.1.11 Add server reconciliation for conflict resolution and error handling
 
-Gantt View:
-- [ ] vis-timeline grouped by rig
-- [ ] Drag/resize dates; display dependencies
-- [ ] Context menu add/remove
+#### M7.2 — Gantt View Implementation
+- [ ] M7.2.1 Set up vis-timeline component with basic configuration
+- [ ] M7.2.2 Group timeline items by rig with proper visualization
+- [ ] M7.2.3 Implement drag functionality for changing dates
+- [ ] M7.2.4 Implement resize functionality for duration changes
+- [ ] M7.2.5 Display dependencies between campaign items with visual connectors
+- [ ] M7.2.6 Add context menu for add/remove operations
+- [ ] M7.2.7 Implement real-time updates when data changes in other views
 
-Scenario UX:
-- [ ] Scenario switcher dropdown; clone action; status badges
+#### M7.3 — Scenario UX Implementation
+- [ ] M7.3.1 Create scenario switcher dropdown component
+- [ ] M7.3.2 Implement scenario selection and context switching
+- [ ] M7.3.3 Add clone action functionality with naming dialog
+- [ ] M7.3.4 Display status badges (active, draft, archived) for scenarios
+- [ ] M7.3.5 Add scenario creation and management controls
 
-Calc Panel:
-- [ ] Trigger calc run; poll status; render KPIs; download JSON/CSV
+#### M7.4 — Calc Panel Implementation
+- [ ] M7.4.1 Create calc trigger button/component with loading states
+- [ ] M7.4.2 Implement polling mechanism for calc run status updates
+- [ ] M7.4.3 Render KPIs in organized panel layout (utilization, NPT, costs, ETA)
+- [ ] M7.4.4 Add download functionality for JSON results
+- [ ] M7.4.5 Add download functionality for CSV export of calc results
+- [ ] M7.4.6 Handle calc errors and display user-friendly messages
 
-Import/Export UI:
-- [ ] Column mapping and dry-run preview; progress and error states
+#### M7.5 — Import/Export UI Implementation
+- [ ] M7.5.1 Create column mapping interface for CSV/Excel imports
+- [ ] M7.5.2 Implement dry-run preview functionality with data validation
+- [ ] M7.5.3 Add progress indicators for import/export operations
+- [ ] M7.5.4 Handle and display validation errors with specific field highlighting
+- [ ] M7.5.5 Implement error recovery and retry mechanisms
+- [ ] M7.5.6 Add export functionality with format selection (CSV/Excel)
 
 ### M8 — Tests and quality
 
@@ -233,6 +260,6 @@ Frontend routes (planned):
 
 - [x] Create repo structure
 - [ ] Bootstrap Django + DRF + Postgres + Redis
-- [ ] Scaffold React + Vite + TS
+- [x] Scaffold React + Vite + TS (M6.1 + M7.1.1-2 completed)
 - [ ] Define API contracts for M3 and stub endpoints
 - [ ] Add sample data and smoke test list endpoints
