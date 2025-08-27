@@ -5,7 +5,7 @@ Local-first MVP to plan and monitor drilling campaigns with a sheet-like UI, Gan
 Source spec: doc/SPEC-002-Drilling Campaign Tracker.md
 
 ## Decisions (M0)
-- Backend dependency tooling: pip-tools (requirements.in/lock via pip-compile)
+- Backend dependency tooling: pip-tools (requirements.in -> requirements.txt via pip-compile)
 - Frontend package manager: npm
 - Code quality:
   - Python: black, ruff, isort (via pre-commit)

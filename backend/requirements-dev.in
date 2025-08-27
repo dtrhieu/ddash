@@ -1,0 +1,7 @@
+-c requirements.txt
+
+pip-tools==7.4.1
+pre-commit==3.7.1
+black==24.8.0
+ruff==0.5.6
+isort==5.13.2

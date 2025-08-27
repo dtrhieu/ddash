@@ -52,11 +52,11 @@ Key planned files:
 
 ### M1.1 — Backend project bootstrap (framework and runtime)
 
-- [ ] M1.1.1 Create Django 5.2 project "app" with manage.py, settings, urls, asgi, wsgi in backend [backend/manage.py](backend/manage.py)
-- [ ] M1.1.2 Add DRF to INSTALLED_APPS and set default JSON renderer in settings [backend/app/settings.py](backend/app/settings.py)
-- [ ] M1.1.3 Add and configure django-cors-headers; set TIME_ZONE=UTC and USE_TZ=True [backend/app/settings.py](backend/app/settings.py)
-- [ ] M1.1.4 Configure Postgres and Redis via env vars in settings; add backend/.env.example with local defaults [backend/app/settings.py](backend/app/settings.py)
-- [ ] M1.1.5 Introduce pip-tools: add backend/requirements.in and requirements-dev.in; compile to requirements.txt and requirements-dev.txt
+- [x] M1.1.1 Create Django 5.2 project "app" with manage.py, settings, urls, asgi, wsgi in backend [backend/manage.py](backend/manage.py)
+- [x] M1.1.2 Add DRF to INSTALLED_APPS and set default JSON renderer in settings [backend/app/settings.py](backend/app/settings.py)
+- [x] M1.1.3 Add and configure django-cors-headers; set TIME_ZONE=UTC and USE_TZ=True [backend/app/settings.py](backend/app/settings.py)
+- [x] M1.1.4 Configure Postgres and Redis via env vars in settings; add backend/.env.example with local defaults [backend/app/settings.py](backend/app/settings.py)
+- [x] M1.1.5 Introduce pip-tools: add backend/requirements.in and requirements-dev.in; compile to requirements.txt and requirements-dev.txt
 - [ ] M1.1.6 Implement /api/health endpoint and wire it in urls for smoke testing [backend/app/urls.py](backend/app/urls.py)
 - [ ] M1.1.7 Run initial migrations and verify runserver boots locally
 

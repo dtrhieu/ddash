@@ -17,7 +17,16 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+
+@api_view(["GET"])
+def drf_check(request):
+    return Response({"message": "DRF is working"})
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/_check/", drf_check),  # Temp for M1.1.2, remove later when M1.1.6 is released
 ]
