@@ -26,7 +26,7 @@ Deferred to IT/on‑prem phase:
 ## Repo layout (planned)
 
 - backend/ — Django + DRF + Celery + calc
-- frontend/ — React + Vite + TypeScript + AG Grid + vis-timeline
+- frontend/ — React + Vite + TypeScript + AG Grid + frappe-gantt
 - deploy/ — Dockerfiles, docker-compose, nginx
 - docs/ — additional docs and ADRs
 
@@ -173,15 +173,14 @@ Planned functions:
 - [ ] M7.1.11 Add server reconciliation for conflict resolution and error handling
 
 #### M7.2 — Gantt View Implementation
-- [ ] M7.2.1 Set up vis-timeline component with basic configuration
-- [ ] M7.2.2 Group timeline items by Rig / Platform / Field with toggle
-- [ ] M7.2.3 Implement drag functionality for changing dates
-- [ ] M7.2.4 Implement resize functionality for duration changes
-- [ ] M7.2.5 Display dependencies between project items with visual connectors
-- [ ] M7.2.6 Overlay platform Maintenance Windows and rig events
-- [ ] M7.2.7 Show badges for campaign tags and conflict indicators
-- [ ] M7.2.8 Add context menu for add/remove operations
-- [ ] M7.2.9 Implement real-time updates when data changes in other views
+- [x] M7.2.1 Install frappe-gantt and create a small React wrapper component that mounts/unmounts the Gantt chart
+- [ ] M7.2.2 Group timeline items by Rig / Platform / Field with toggle. Since frappe-gantt doesn't support this, simulate it by inserting "group headers" rows and filtering them out when the toggle changes.
+- [ ] M7.2.3 Wire up drag/resize events (on_date_change) to patch start/end dates in state and persist via API.
+- [ ] M7.2.4 Implement dependencies between project items with visual connectors
+- [ ] M7.2.5 Overlay platform Maintenance Windows and rig events
+- [ ] M7.2.6 Show badges for campaign tags and conflict indicators
+- [ ] M7.2.7 Add context menu for add/remove operations
+- [ ] M7.2.8 Implement real-time updates when data changes in other views
 
 #### M7.3 — Scenario UX Implementation
 - [ ] M7.3.1 Create scenario switcher dropdown component

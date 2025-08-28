@@ -50,7 +50,7 @@ Operations teams need a lightweight system to plan and monitor drilling campaign
 
 ### High-level Architecture (On‑Prem)
 
-- **Frontend**: React SPA served by Nginx; UI uses **AG Grid (Community)** for sheet-like editing and **vis-timeline** for the Gantt.
+- **Frontend**: React SPA served by Nginx; UI uses **AG Grid (Community)** for sheet-like editing and **frappe-gantt** for the Gantt.
 
 - **Backend**: **Django 5.2 (LTS)** + **Django REST Framework** for APIs; built-in auth/permissions.
 
