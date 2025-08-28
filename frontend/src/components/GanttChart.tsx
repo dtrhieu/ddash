@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import "frappe-gantt/dist/frappe-gantt.css";
 
 // Minimal type for tasks compatible with frappe-gantt
 export type GanttTask = {
