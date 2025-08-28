@@ -1,8 +1,8 @@
 Drilling Campaign Tracker — Development Guidelines
 
 Context snapshot
-- Backend: Python 3.12, Django/DRF/Celery planned, but not scaffolded yet (placeholders in backend/app/* and manage.py). Pure calc utilities exist in backend/calc/engine.py.
-- Frontend: React + Vite + TypeScript planned; skeleton files exist under frontend/ but no build tooling wired yet.
+- Backend: Python 3.12. Django/DRF/Celery are planned; minimal scaffolding exists (manage.py and app/settings.py/urls.py), but domain apps and APIs are not implemented yet. Pure calc utilities exist in backend/calc/engine.py.
+- Frontend: React + Vite + TypeScript scaffold present; basic Sheet and Gantt pages exist but are not wired to a backend API.
 - Tooling decisions (from README):
   - Python: black, ruff, isort via pre-commit
   - JS/TS: eslint, prettier via pre-commit mirrors
@@ -70,7 +70,7 @@ What we validated
 Guidelines for future test expansion
 - Keep tests pure for backend/calc until Django is scaffolded (M1+). Avoid mocking Django unless the project structure is promoted to a real Django app.
 - Prefer deterministic inputs and avoid timezone/date coupling; use datetime.date for calc functions.
-- Maintain tests close to the domain (doc/SPEC-002-Drilling Campaign Tracker.md) and encode edge cases found in the spec.
+- Maintain tests close to the domain (docs/SPEC-002-Drilling Campaign Tracker.md) and encode edge cases found in the spec.
 
 Code quality and conventions
 - Python
@@ -97,3 +97,4 @@ Troubleshooting
 Changelog for this guideline file
 - 2025-08-27: Initial guidelines, validated sample unittest for calc engine, documented namespace/discovery caveats and dev tooling configuration.
 - 2025-08-27: Updated Python version references to 3.12 and aligned tool target versions.
+- 2025-08-28: Updated context snapshot per TODO/SPEC: backend minimal Django scaffolding exists; frontend Sheet/Gantt scaffolds present; clarified test import path docs link.

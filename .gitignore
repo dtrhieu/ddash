@@ -74,3 +74,4 @@ coverage/
 # Editors
 .vscode/
 .idea/
+/frontend/WARP.md

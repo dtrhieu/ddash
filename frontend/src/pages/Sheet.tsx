@@ -176,7 +176,7 @@ export default function Sheet() {
 
   return (
     <div className="sheet-container" style={{ height: '100vh', padding: '20px' }}>
-      <h1>Drilling Campaign Tracker - Sheet View</h1>
+      <h1>Drilling Campaign - Sheet View</h1>
       <div
         className="ag-theme-alpine"
         style={{
