@@ -1,0 +1,13 @@
+version: "3.9"
+
+# M9 will flesh this out with services:
+# - nginx
+# - backend (django + gunicorn)
+# - worker (celery)
+# - redis
+# - postgres
+# - frontend build/static
+services:
+  placeholder:
+    image: alpine:3.20
+    command: ["sh", "-c", "echo Compose placeholders — to be implemented in M9"]

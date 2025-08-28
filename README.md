@@ -1,95 +1,45 @@
-# Drilling Campaign Management System
+# Drilling Campaign Tracker
 
-A modern system for managing drilling campaigns, tasks, rigs, and wells.
+Local-first MVP to plan and monitor drilling campaigns with a sheet-like UI, Gantt visualization, and a Python calc engine.
 
-## Architecture Overview
+Source spec: doc/SPEC-002-Drilling Campaign Tracker.md
 
-This application follows a layered architecture pattern with the following components:
+## Decisions (M0)
+- Backend dependency tooling: pip-tools (requirements.in -> requirements.txt via pip-compile)
+- Frontend package manager: npm
+- Code quality:
+  - Python: black, ruff, isort (via pre-commit)
+  - TypeScript/JS: eslint, prettier (via pre-commit mirrors)
 
-1. **Presentation Layer**: FastAPI RESTful API
-2. **Business Logic Layer**: Service modules implementing business rules
-3. **Data Access Layer**: SQLAlchemy ORM with PostgreSQL database
-4. **Authentication Layer**: JWT-based authentication and authorization
+## Repo layout (bootstrap)
+- backend/ — Django + DRF + Celery + calc (scaffolded in M1)
+- frontend/ — React + Vite + TypeScript (scaffolded in M6)
+- deploy/ — Dockerfiles, docker-compose, nginx (filled in M9)
+- docs/ — additional docs and ADRs (optional, complement to existing doc/)
 
-## Directory Structure
+Planned key files (placeholders added where possible in M0):
+- deploy/docker-compose.yml
+- deploy/nginx.conf
+- backend/pyproject.toml
+- backend/manage.py
+- backend/app/settings.py
+- backend/app/urls.py
+- backend/calc/engine.py
+- frontend/index.html
+- frontend/src/main.tsx
+- frontend/src/pages/Gantt.tsx
+- frontend/src/pages/Sheet.tsx
 
-```
-src/
-├── api/              # API endpoints
-├── auth/             # Authentication and authorization
-├── database/         # Database models and connection
-├── models/           # Pydantic models for validation
-├── services/         # Business logic services
-└── main.py          # Application entry point
-```
+Spec: doc/SPEC-002-Drilling Campaign Tracker.md
 
-## Features
+## Getting started (M0)
+1) Ensure git is available; repo has been initialized via M0.
+2) Install pre-commit (pipx or pip): pipx install pre-commit
+3) Install git hooks: pre-commit install
+4) Python toolchain is configured in backend/pyproject.toml (no runtime deps yet).
+5) ESLint/Prettier hooks are configured via mirrors; Node will be required when we scaffold the frontend in M6.
 
-- User management with role-based access control
-- Campaign management with wells and rigs
-- Task management with status tracking and comments
-- Dashboard with KPIs and alerts
-- File attachments for tasks
-- Audit logging for all changes
-
-## Requirements
-
-- Python 3.8+
-- PostgreSQL database
-- Dependencies listed in `requirements.txt`
-
-## Installation
-
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. Set up environment variables:
-   ```bash
-   export DATABASE_URL=postgresql://user:password@localhost/drilling_db
-   export SECRET_KEY=your-secret-key-here
-   ```
-
-3. Run the application:
-   ```bash
-   uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
-   ```
-
-## API Documentation
-
-- Interactive docs: http://localhost:8000/docs
-- ReDoc documentation: http://localhost:8000/redoc
-
-## Database Schema
-
-The application uses PostgreSQL with the following tables:
-- users
-- user_roles
-- campaigns
-- rigs
-- wells
-- tasks
-- task_comments
-- attachments
-- audit_logs
-
-## Authentication
-
-The API uses JWT tokens for authentication. To access protected endpoints:
-
-1. Create a user account
-2. Log in to receive an access token
-3. Include the token in the Authorization header:
-   ```
-   Authorization: Bearer <your-token>
-   ```
-
-## Role-Based Access Control
-
-The system supports the following roles:
-- admin: Full access to all features
-- ops_manager: Manage campaigns, wells, rigs, and tasks
-- engineer: Create/update tasks, view campaigns
-- logistics: Manage equipment and logistics data
-- executive: Read-only access to dashboard and reports
+Next milestones:
+- M1: Bootstrap Django + DRF + base apps and settings
+- M6: Scaffold React + Vite + TS and baseline routes/components
+- M9: Compose & Nginx packaging for local
