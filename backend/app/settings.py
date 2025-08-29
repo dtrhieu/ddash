@@ -43,6 +43,10 @@ INSTALLED_APPS = [
     # Third party apps
     "corsheaders",
     "rest_framework",
+    # Project apps (M1.2 scaffolds)
+    "users",
+    "core",
+    "scheduling",
 ]
 
 # DRF baseline

@@ -64,7 +64,8 @@ Key planned files:
 
 ### M1.2 — Base apps and data model (domain entities)
 
-- [ ] M1.2.1 Create Django apps: users, core, scheduling, calc
+- [x] M1.2.1 Create Django apps: users, core, scheduling, calc
+  - Note: users/core/scheduling scaffolds added and wired into INSTALLED_APPS; calc remains a pure module under backend/calc. To avoid name collision, decide an app name like "calc_models" later.
 - [ ] M1.2.2 Implement models per spec: User(role enum), Field, Platform, Rig, Well, Project, Campaign, CampaignProject (junction), Scenario, CalcRun, MaintenanceWindow, AuditLog
 - [ ] M1.2.3 Add DB indexes and constraints: unique(name) where applicable; btree(name); composites on Project (rig_id, planned_start), (platform_id, planned_start); GIN on dependencies jsonb
 - [ ] M1.2.4 Make and apply initial migrations
