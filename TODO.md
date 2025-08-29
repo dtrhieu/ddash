@@ -85,23 +85,23 @@ Key planned files:
 
 ### M2 — Core APIs (PRIORITY 1 - MVP Phase 1)
 
-- [ ] Create DRF serializers for all core entities (Field, Platform, Rig, Well, Project, Campaign)
-- [ ] Implement ViewSets with full CRUD operations for all entities
-- [ ] Add proper validation and error handling in serializers
-- [ ] Wire up URL routing for all API endpoints (/api/fields/, /api/platforms/, etc.)
-- [ ] Load sample data fixtures and test all endpoints
-- [ ] Create API documentation and test basic operations
+- [x] M2.1 Create DRF serializers for all core entities (Field, Platform, Rig, Well, Project, Campaign)
+- [x] M2.2 Implement ViewSets with full CRUD operations for all entities
+- [x] M2.3 Add proper validation and error handling in serializers
+- [x] M2.4 Wire up URL routing for all API endpoints (/api/fields/, /api/platforms/, etc.)
+- [x] M2.5 Load sample data fixtures and test all endpoints
+- [x] M2.6 Create API documentation and test basic operations
 
 ### M3 — Sheet-Like UI Foundation (PRIORITY 2 - MVP Phase 1)
 
-- [ ] Create TypeScript API client with proper error handling
-- [ ] Build type definitions matching backend models
-- [ ] Implement CRUD operations for all entities in API client
-- [ ] Create base AG Grid components with proper configuration
-- [ ] Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
-- [ ] Implement comprehensive Projects sheet as main interface
-- [ ] Add inline editing, validation, and relationship handling
-- [ ] Implement filtering, sorting, and basic bulk operations
+- [ ] M3.1 Create TypeScript API client with proper error handling
+- [ ] M3.2 Build type definitions matching backend models
+- [ ] M3.3 Implement CRUD operations for all entities in API client
+- [ ] M3.4 Create base AG Grid components with proper configuration
+- [ ] M3.5 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
+- [ ] M3.6 Implement comprehensive Projects sheet as main interface
+- [ ] M3.7 Add inline editing, validation, and relationship handling
+- [ ] M3.8 Implement filtering, sorting, and basic bulk operations
 
 ### M4 — Basic Calculation Engine (PRIORITY 3 - MVP Phase 1)
 
@@ -199,14 +199,14 @@ Key planned files:
 - [ ] Map view for exploration wells
 - [ ] Advanced import/export with Excel support
 
-### M8 — Tests and quality
+### M10 — Tests and quality
 
-- [ ] Backend: pytest config, API tests, calc unit tests
-- [ ] Frontend: vitest/react-testing-library unit tests
-- [ ] E2E: Playwright happy-path for Sheet, Gantt, Calc
-- [ ] Lint/format CI and pre-commit hooks
+- [ ] M10.1 Backend: pytest config, API tests, calc unit tests
+- [ ] M10.2 Frontend: vitest/react-testing-library unit tests
+- [ ] M10.3 E2E: Playwright happy-path for Sheet, Gantt, Calc
+- [ ] M10.4 Lint/format CI and pre-commit hooks
 
-### M9 — Local packaging and data
+### M11 — Local packaging and data
 
 - [ ] Dockerfiles for backend and frontend
 - [ ] Nginx reverse proxy config [deploy/nginx.conf](deploy/nginx.conf)
@@ -214,7 +214,7 @@ Key planned files:
 - [ ] .env.example for services and Makefile targets
 - [ ] Seed sample data fixtures and a demo scenario
 
-### M10 — Deferred IT/on‑prem hardening (placeholder)
+### M12 — Deferred IT/on‑prem hardening (placeholder)
 
 - [ ] TLS termination with enterprise certs
 - [ ] Backups: nightly pg_dump, weekly base + WAL to enterprise storage

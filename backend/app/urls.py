@@ -16,10 +16,27 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.utils.timezone import now
+from django.views.generic import TemplateView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.routers import DefaultRouter
+
+from core.views import (
+    FieldViewSet,
+    MaintenanceWindowViewSet,
+    PlatformViewSet,
+    RigViewSet,
+    WellViewSet,
+)
+from scheduling.views import (
+    CalcRunViewSet,
+    CampaignProjectViewSet,
+    CampaignViewSet,
+    ProjectViewSet,
+    ScenarioViewSet,
+)
 
 
 @api_view(["GET"])
@@ -39,7 +56,58 @@ def health(request):
     )
 
 
+router = DefaultRouter()
+# Core endpoints
+router.register(r"fields", FieldViewSet, basename="field")
+router.register(r"platforms", PlatformViewSet, basename="platform")
+router.register(r"rigs", RigViewSet, basename="rig")
+router.register(r"wells", WellViewSet, basename="well")
+router.register(r"maintenance-windows", MaintenanceWindowViewSet, basename="maintenancewindow")
+# Scheduling endpoints
+router.register(r"scenarios", ScenarioViewSet, basename="scenario")
+router.register(r"projects", ProjectViewSet, basename="project")
+router.register(r"campaigns", CampaignViewSet, basename="campaign")
+router.register(r"campaign-projects", CampaignProjectViewSet, basename="campaignproject")
+router.register(r"calc-runs", CalcRunViewSet, basename="calcrun")
+
+
+# Simple schema-lite endpoint to list available routes without extra deps
+@api_view(["GET"])
+def schema_lite(request):
+    endpoints = []
+    for url in router.urls:
+        try:
+            # Django 5 patterns have "pattern" attr convertible to str
+            pattern = str(url.pattern)
+        except Exception:  # pragma: no cover - defensive
+            pattern = getattr(url, "name", "")
+        endpoints.append(
+            {
+                "name": url.name,
+                "pattern": pattern,
+                "lookup": getattr(url, "lookup_value_regex", None),
+            }
+        )
+    return Response(
+        {
+            "service": "ddash-backend",
+            "count": len(endpoints),
+            "endpoints": endpoints,
+        }
+    )
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health", health),  # M1.1.6 health endpoint
+    path("api/", include(router.urls)),
+    path("api/schema-lite", schema_lite, name="api-schema-lite"),
+    path(
+        "api/docs/",
+        TemplateView.as_view(
+            template_name="api_docs.html",
+            extra_context={"endpoints": [str(u.pattern) for u in router.urls]},
+        ),
+        name="api-docs",
+    ),
 ]

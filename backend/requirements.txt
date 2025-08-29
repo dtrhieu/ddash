@@ -25,3 +25,5 @@ sqlparse==0.5.3
     # via django
 typing-extensions==4.15.0
     # via psycopg
+inflection==0.5.1
+    # via djangorestframework
