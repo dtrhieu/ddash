@@ -4,23 +4,26 @@ Source spec: [docs/SPEC-002-Drilling Campaign Tracker.md](docs/SPEC-002-Drilling
 
 Working mode: Local-first development. All IT/infra hardening is deferred to a later on‑prem phase. This file tracks scope, milestones, and acceptance.
 
-## Scope for MVP (local)
+## Scope for MVP (local) - REVISED
 
-Must-haves:
+**Phase 1 Must-haves (Sheet-First Approach):**
 - Spreadsheet-like UI to CRUD Fields, Platforms, Wells, Projects, Campaigns (with relations and inline editing)
-- Gantt chart of Projects grouped by Rig / Platform / Field with drag/resize, dependencies, and overlays for platform Maintenance Windows and rig events
-- Python calc engine: duration, rig utilization (exclude maintenance toggle), cost/day, ETA, and conflict detection (rig double-booking, platform maintenance clash)
-- User auth with roles (Viewer, Editor, Admin)
-- Import/export CSV/Excel for Fields, Platforms, Wells, Projects, Campaigns, Maintenance Windows
-- Audit trail of edits
+- REST API endpoints for all core entities with full CRUD operations
+- Basic Python calc engine: duration, cost calculation, simple conflict detection (rig double-booking)
+- Gantt chart of Projects with basic drag/resize functionality
+- Simple data import/export (CSV) for core entities
 
-Should-haves considered for MVP:
-- Scenario versions (draft vs approved) and clone
-- Comments/annotations on grid rows, Gantt items, and Projects
-- Simple API to trigger/fetch calc results
-- Map view for open-location exploration wells (optional if PostGIS enabled)
+**Phase 2 Should-haves (Enhanced Features):**
+- Advanced Gantt features: grouping by Rig/Platform/Field, dependencies, maintenance window overlays
+- Enhanced calc engine: rig utilization, ETA, platform maintenance clash detection
+- Scenario versions and clone functionality
+- Excel import/export with column mapping
 
-Deferred to IT/on‑prem phase:
+**Deferred to Later Phases:**
+- User auth with roles (Viewer, Editor, Admin) - **DEFERRED**
+- Audit trail of edits - **DEFERRED**
+- Comments/annotations on grid rows and Gantt items
+- Map view for open-location exploration wells
 - TLS, SMTP, runbooks, backups to enterprise storage, SSO, production Compose/systemd, monitoring/metrics dashboards
 
 ## Repo layout (planned)
@@ -80,139 +83,121 @@ Key planned files:
 - [x] M1.2.8 Smoke test via Django shell to create/list entities and validate constraints (rig-required types, maintenance clash)
   - Implemented: scripts/smoke_m12.py verifies maintenance overlap and campaign ordering. Run with: python scripts/smoke_m12.py.
 
-### M2 — AuthZ and Audit
+### M2 — Core APIs (PRIORITY 1 - MVP Phase 1)
+
+- [ ] Create DRF serializers for all core entities (Field, Platform, Rig, Well, Project, Campaign)
+- [ ] Implement ViewSets with full CRUD operations for all entities
+- [ ] Add proper validation and error handling in serializers
+- [ ] Wire up URL routing for all API endpoints (/api/fields/, /api/platforms/, etc.)
+- [ ] Load sample data fixtures and test all endpoints
+- [ ] Create API documentation and test basic operations
+
+### M3 — Sheet-Like UI Foundation (PRIORITY 2 - MVP Phase 1)
+
+- [ ] Create TypeScript API client with proper error handling
+- [ ] Build type definitions matching backend models
+- [ ] Implement CRUD operations for all entities in API client
+- [ ] Create base AG Grid components with proper configuration
+- [ ] Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
+- [ ] Implement comprehensive Projects sheet as main interface
+- [ ] Add inline editing, validation, and relationship handling
+- [ ] Implement filtering, sorting, and basic bulk operations
+
+### M4 — Basic Calculation Engine (PRIORITY 3 - MVP Phase 1)
+
+- [ ] Implement real duration and cost calculations in [backend/calc/engine.py](backend/calc/engine.py)
+- [ ] Add basic rig double-booking conflict detection
+- [ ] Create simple rig utilization metrics
+- [ ] Add calculation trigger API endpoint
+- [ ] Display calculation results in UI panel
+- [ ] Show conflicts and warnings in sheet views
+
+### M5 — Enhanced Gantt View (PRIORITY 4 - MVP Phase 1)
+
+- [ ] Connect Gantt component to real project data from API
+- [ ] Transform project data to frappe-gantt format
+- [ ] Implement drag and drop to update project dates
+- [ ] Add basic grouping toggle (by rig/platform/field)
+- [ ] Show conflict highlighting in timeline
+- [ ] Handle data updates and refresh from sheet changes
+
+### M6 — Data Import/Export (PRIORITY 5 - MVP Phase 1)
+
+- [ ] Implement CSV export for all entity types
+- [ ] Add basic CSV import with column mapping
+- [ ] Create import validation and error reporting
+- [ ] Add dry-run preview functionality
+- [ ] Excel export with proper formatting (Phase 2)
+
+### M7 — DEFERRED: AuthZ and Audit (MVP Phase 2)
 
 - [ ] Implement session-based auth for local (Django session cookie + CSRF)
 - [ ] Roles and DRF permissions for Viewer/Editor/Admin
 - [ ] Implement AuditLog via model signals capturing before/after snapshots
 - [ ] Add basic admin endpoints for user/role management
 
-### M3 — Core APIs
+### M8 — DEFERRED: Advanced Features (MVP Phase 2)
 
-- [ ] Fields endpoints GET/POST and GET/PATCH/DELETE by id
-- [ ] Platforms endpoints GET/POST and GET/PATCH/DELETE by id
-- [ ] Platform Maintenance Windows: /api/platforms/{id}/maintenance-windows GET/POST and /api/maintenance-windows/{id} PATCH/DELETE
-- [ ] Rigs endpoints GET/POST and GET/PATCH/DELETE by id
-- [ ] Wells endpoints GET/POST and GET/PATCH/DELETE by id
-- [ ] Projects endpoints GET/POST and GET/PATCH/DELETE by id (+ bulk update)
-- [ ] Campaigns CRUD scoped to scenario
-- [ ] CampaignProjects management: /api/campaigns/{id}/projects GET/POST/DELETE
-- [ ] Scenarios list/create/retrieve/update and POST /clone
-- [ ] Gantt GET /api/gantt?scenario_id=...&group_by=rig|platform|field&include_maintenance=true|false
-- [ ] Validation and error formatting; filtering/sorting and pagination
-- [ ] API tests incl. permission matrix
+- [ ] Advanced Gantt features: dependencies, maintenance window overlays
+- [ ] Scenario versions and clone functionality
+- [ ] Comments/annotations system
+- [ ] Map view for exploration wells
+- [ ] Excel import/export with advanced column mapping
 
-### M4 — Calc engine
+### M9 — REVISED: Frontend Implementation (MVP Phase 1)
 
-- [ ] Implement pure functions in [backend/calc/engine.py](backend/calc/engine.py)
-- [ ] Unit tests for duration, utilization, cost, ETA, conflicts
-- [ ] Integrate Celery with Redis; local worker process
-- [ ] POST /api/calc/run to enqueue; GET /api/calc/{id} to fetch status/results
-- [ ] Persist results in CalcRun and return KPIs
+#### M9.1 — API Client Foundation (PRIORITY 1)
+- [x] M9.1.1 Set up Vite + React + TypeScript project with package.json and dependencies
+- [x] M9.1.2 Configure Vite build system and development server
+- [x] M9.1.3 Set up project structure with components, hooks, utils, and types directories
+- [ ] M9.1.4 Create API client with fetch wrapper and base configuration
+- [ ] M9.1.5 Add error mapping and response handling utilities
+- [ ] M9.1.6 Create TypeScript types for API responses and requests
 
-Planned functions:
-- [ ] [calc.compute_duration()](backend/calc/engine.py:1)
-- [ ] [calc.compute_rig_utilization()](backend/calc/engine.py:1)
-- [ ] [calc.compute_costs()](backend/calc/engine.py:1)
-- [ ] [calc.estimate_eta()](backend/calc/engine.py:1)
-- [ ] [calc.detect_conflicts()](backend/calc/engine.py:1)
-- [ ] [calc.run_all_metrics()](backend/calc/engine.py:1)
+#### M9.2 — Sheet View Implementation (PRIORITY 2)
+- [x] M9.2.1 Set up AG Grid component with basic configuration and data source
+- [x] M9.2.2 Configure columns: rig, well, planned_start/end, duration, cost with proper formatting
+- [ ] M9.2.3 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
+- [ ] M9.2.4 Implement comprehensive Projects sheet as main interface
+- [ ] M9.2.5 Implement Create operations (add new rows for all entity types)
+- [ ] M9.2.6 Implement Update operations (inline editing with validation)
+- [ ] M9.2.7 Implement Delete operations (remove rows with confirmation)
+- [ ] M9.2.8 Add relationship handling (dropdowns for foreign keys)
+- [ ] M9.2.9 Implement filtering, sorting, and basic bulk operations
 
-### M5 — Import/Export
+#### M9.3 — Gantt View Enhancement (PRIORITY 3)
+- [x] M9.3.1 Install frappe-gantt and create React wrapper component
+- [ ] M9.3.2 Connect Gantt to real project data from API
+- [ ] M9.3.3 Wire up drag/resize events to update project dates via API
+- [ ] M9.3.4 Add basic grouping toggle (by rig/platform/field)
+- [ ] M9.3.5 Show conflict highlighting in timeline
+- [ ] M9.3.6 Handle data updates and refresh from sheet changes
 
-- [ ] CSV/Excel import with pandas/openpyxl
-- [ ] Column mapping UI and dry-run response
-- [ ] Export endpoints for fields/platforms/wells/projects/campaigns/maintenance-windows
-- [ ] Dataset validators and error reporting
+#### M9.4 — Calculation Panel (PRIORITY 4)
+- [ ] M9.4.1 Create calc trigger button/component with loading states
+- [ ] M9.4.2 Display calculation results in organized panel layout
+- [ ] M9.4.3 Show conflicts and warnings from calculations
+- [ ] M9.4.4 Add basic export functionality for calc results
 
-### M6 — Frontend scaffold
+#### M9.5 — Import/Export UI (PRIORITY 5)
+- [ ] M9.5.1 Add CSV export functionality for all entity types
+- [ ] M9.5.2 Create basic CSV import with column mapping
+- [ ] M9.5.3 Implement import validation and error reporting
+- [ ] M9.5.4 Add dry-run preview functionality
 
-#### M6.1 — Project Setup
-- [x] M6.1.1 Set up Vite + React + TypeScript project with package.json and dependencies
-- [x] M6.1.2 Configure Vite build system and development server
-- [x] M6.1.3 Set up project structure with components, hooks, utils, and types directories
+#### M9.6 — DEFERRED: Authentication UI (MVP Phase 2)
+- [ ] Create login page component with form validation
+- [ ] Implement logout functionality and session cleanup
+- [ ] Add loading states and error handling for auth flows
+- [ ] Implement protected routes with role-based access control
+- [ ] Create authentication context/provider for global state management
 
-#### M6.2 — API Client & Auth
-- [ ] M6.2.1 Create API client with fetch wrapper and base configuration
-- [ ] M6.2.2 Implement authentication handling (login/logout/session management)
-- [ ] M6.2.3 Add error mapping and response handling utilities
-- [ ] M6.2.4 Create TypeScript types for API responses and requests
-
-#### M6.3 — Routing & Protection
-- [x] M6.3.1 Set up React Router for navigation
-- [ ] M6.3.2 Implement protected routes with role-based access control
-- [ ] M6.3.3 Create route guards and authentication checks
-
-#### M6.4 — Authentication UI
-- [ ] M6.4.1 Create login page component with form validation
-- [ ] M6.4.2 Implement logout functionality and session cleanup
-- [ ] M6.4.3 Add loading states and error handling for auth flows
-
-#### M6.5 — Session & Security
-- [ ] M6.5.1 Implement session storage for authentication tokens
-- [ ] M6.5.2 Add CSRF token handling for API requests
-- [ ] M6.5.3 Create authentication context/provider for global state management
-
-#### M6.6 — Integration & Layout
-- [ ] M6.6.1 Update main.tsx to use router and authentication provider
-- [x] M6.6.2 Connect existing Gantt and Sheet pages to the routing system
-- [ ] M6.6.3 Add navigation layout with role-based menu items
-
-#### M6.7 — Testing & Verification
-- [ ] M6.7.1 Test complete authentication flow (login → protected routes → logout)
-- [ ] M6.7.2 Verify API client integration with backend endpoints
-- [ ] M6.7.3 Ensure proper error handling and user feedback throughout the app
-
-### M7 — UI Features
-
-#### M7.1 — Sheet View Implementation
-- [x] M7.1.1 Set up AG Grid component with basic configuration and data source
-- [x] M7.1.2 Configure columns: rig, well, planned_start/end, duration, cost with proper formatting
-  - Implemented: AG Grid Community with sorting, filtering, pagination, date/currency formatting, calculated duration and cost columns
-- [ ] M7.1.3 Implement Create operations (add new rows for fields/platforms/wells/projects/campaigns)
-- [ ] M7.1.4 Implement Read operations (display data with sorting/filtering)
-- [ ] M7.1.5 Implement Update operations (inline editing with validation)
-- [ ] M7.1.6 Implement Delete operations (remove rows with confirmation)
-- [ ] M7.1.7 Add inline validation for data entry (required links, date formats, numeric ranges; rig required for certain project types)
-- [ ] M7.1.8 Implement undo/redo functionality with state management
-- [ ] M7.1.9 Add multi-row paste support with data parsing
-- [ ] M7.1.10 Implement optimistic updates for better UX
-- [ ] M7.1.11 Add server reconciliation for conflict resolution and error handling
-
-#### M7.2 — Gantt View Implementation
-- [x] M7.2.1 Install frappe-gantt and create a small React wrapper component that mounts/unmounts the Gantt chart
-- [ ] M7.2.2 Group timeline items by Rig / Platform / Field with toggle. Since frappe-gantt doesn't support this, simulate it by inserting "group headers" rows and filtering them out when the toggle changes.
-- [ ] M7.2.3 Wire up drag/resize events (on_date_change) to patch start/end dates in state and persist via API.
-- [ ] M7.2.4 Implement dependencies between project items with visual connectors
-- [ ] M7.2.5 Overlay platform Maintenance Windows and rig events
-- [ ] M7.2.6 Show badges for campaign tags and conflict indicators
-- [ ] M7.2.7 Add context menu for add/remove operations
-- [ ] M7.2.8 Implement real-time updates when data changes in other views
-
-#### M7.3 — Scenario UX Implementation
-- [ ] M7.3.1 Create scenario switcher dropdown component
-- [ ] M7.3.2 Implement scenario selection and context switching (filter by campaign[s])
-- [ ] M7.3.3 Add clone action functionality with naming dialog
-- [ ] M7.3.4 Display status badges (active, draft, archived) for scenarios
-- [ ] M7.3.5 Add scenario creation and management controls
-
-#### M7.4 — Calc Panel Implementation
-- [ ] M7.4.1 Create calc trigger button/component with loading states
-- [ ] M7.4.2 Implement polling mechanism for calc run status updates
-- [ ] M7.4.3 Render KPIs in organized panel layout (utilization, costs, ETA, conflicts)
-- [ ] M7.4.4 Add download functionality for JSON results
-- [ ] M7.4.5 Add download functionality for CSV export of calc results
-- [ ] M7.4.6 Handle calc errors and display user-friendly messages
-
-#### M7.5 — Import/Export UI Implementation
-- [ ] M7.5.1 Create column mapping interface for CSV/Excel imports
-- [ ] M7.5.2 Implement dry-run preview functionality with data validation
-- [ ] M7.5.3 Add progress indicators for import/export operations
-- [ ] M7.5.4 Handle and display validation errors with specific field highlighting
-- [ ] M7.5.5 Implement error recovery and retry mechanisms
-- [ ] M7.5.6 Add export functionality with format selection (CSV/Excel)
-
-- [ ] (Optional) Map view for exploration wells if PostGIS enabled
+#### M9.7 — DEFERRED: Advanced Features (MVP Phase 2)
+- [ ] Advanced Gantt features: dependencies, maintenance window overlays
+- [ ] Scenario management UI with clone functionality
+- [ ] Comments/annotations system
+- [ ] Map view for exploration wells
+- [ ] Advanced import/export with Excel support
 
 ### M8 — Tests and quality
 
@@ -238,16 +223,23 @@ Planned functions:
 - [ ] SSO integration
 - [ ] Systemd or production Compose, rollout runbooks
 
-## Acceptance checklist (maps to spec)
+## Acceptance checklist (MVP Phase 1)
 
+**Core Functionality:**
 - [ ] CRUD via grid with inline edit, sorting/filtering across Fields, Platforms, Wells, Projects, Campaigns
-- [ ] Gantt with drag/resize, dependency display, and grouping toggle Rig/Platform/Field
-- [ ] Overlays for platform Maintenance Windows and rig events
-- [ ] Trigger calcs and see results; KPIs visible (utilization, costs, ETA, conflicts)
-- [ ] Roles enforced across endpoints and UI routes
-- [ ] CSV/Excel import/export round-trips
+- [ ] REST API endpoints working for all core entities with proper validation
+- [ ] Basic calculations working: duration, cost, simple conflict detection
+- [ ] Gantt with drag/resize and basic grouping toggle Rig/Platform/Field
+- [ ] CSV import/export for core entities
+- [ ] Data persistence across sessions
+
+**Deferred to Phase 2:**
+- [ ] Advanced Gantt features: dependencies, maintenance window overlays
+- [ ] Advanced calculations: rig utilization, ETA, platform maintenance clash detection
+- [ ] User authentication and roles enforcement
 - [ ] Audit trail captures who/when/what before/after
-- [ ] Filter by campaign(s) in grids and Gantt
+- [ ] Scenario management and filtering by campaign(s)
+- [ ] Excel import/export with advanced features
 
 ## Interfaces summary
 
@@ -279,10 +271,23 @@ Frontend routes (planned):
 - Visibility: keep this TODO evolving; add dates/owners when tasks start.
 - Link back to spec for details: [docs/SPEC-002-Drilling Campaign Tracker.md](docs/SPEC-002-Drilling%20Campaign%20Tracker.md)
 
-## Quick next actions
+## Quick next actions (MVP Phase 1)
 
+**Immediate Priority:**
 - [x] Create repo structure
-- [ ] Bootstrap Django + DRF + Postgres + Redis
-- [x] Scaffold React + Vite + TS (M6.1 + M7.1.1-2 completed)
-- [ ] Define API contracts per SPEC and stub endpoints
-- [ ] Add sample data and smoke test list endpoints
+- [x] Bootstrap Django + DRF foundation
+- [x] Scaffold React + Vite + TS with basic AG Grid
+- [ ] **NEXT: Create DRF serializers and ViewSets for all entities (M2)**
+- [ ] **NEXT: Build API client and connect to real data (M3)**
+- [ ] **NEXT: Implement comprehensive Projects sheet interface**
+
+**Following Steps:**
+- [ ] Add basic calculation engine with conflict detection
+- [ ] Enhance Gantt view with real data integration
+- [ ] Add CSV import/export functionality
+- [ ] Test end-to-end workflows and polish UI
+
+**Deferred:**
+- [ ] Authentication and authorization system
+- [ ] Audit trail implementation
+- [ ] Advanced Gantt features and scenario management

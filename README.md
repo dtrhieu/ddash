@@ -41,15 +41,42 @@ Spec: docs/SPEC-002-Drilling Campaign Tracker.md
    - npm run install:frontend
    - npm run dev | build | preview | lint (proxies to frontend/)
 
-Next milestones:
-- M1: Base apps and data model (pending)
-- M6: Auth + API client + protected routes (in progress)
-- M9: Compose & Nginx packaging (placeholders added)
+Next milestones (MVP Phase 1):
+- M2: Core APIs - DRF serializers and ViewSets (priority 1)
+- M3: Sheet-Like UI Foundation - API client and AG Grid sheets (priority 2)
+- M4: Basic Calculation Engine - core metrics and conflict detection (priority 3)
+- M5: Enhanced Gantt View - real data integration (priority 4)
+- M6: Data Import/Export - CSV functionality (priority 5)
 
-## Current Progress
-- Backend: Django + DRF + CORS configured; env-driven DB/Redis settings; health endpoint at `/api/health`; calc/engine placeholder functions.
-- Frontend: Vite + React + TS + Tailwind; routing via React Router with Sidebar; Sheet page using AG Grid with demo data; Gantt wrapper around `frappe-gantt` with demo tasks.
-- Deploy: `deploy/docker-compose.yml` and `deploy/nginx.conf` placeholders added for M9.
+Deferred to Phase 2:
+- Authentication and authorization system
+- Audit trail implementation
+- Advanced Gantt features and scenario management
+
+## Current Progress (MVP Phase 1 Focus)
+
+**Backend Foundation (Complete):**
+- Django + DRF + CORS configured; env-driven DB/Redis settings
+- Complete data models for all entities with proper relationships
+- Health endpoint at `/api/health`; calc/engine placeholder functions
+- Django admin interface configured for all models
+
+**Frontend Foundation (Complete):**
+- Vite + React + TS + Tailwind; routing via React Router with Sidebar
+- Sheet page using AG Grid with demo data and proper column formatting
+- Gantt wrapper around `frappe-gantt` with demo tasks
+- Basic component structure and styling
+
+**Next Steps (In Progress):**
+- Create DRF serializers and ViewSets for all entities
+- Build API client and connect frontend to real backend data
+- Implement comprehensive sheet-based CRUD operations
+- Add basic calculation engine with conflict detection
+
+**Deferred:**
+- Authentication system (no login required for MVP)
+- Audit trail (simplified for MVP)
+- Advanced Gantt features (basic timeline first)
 
 ## Initialize SQLite DB from dump (schema-agnostic)
 To create a throwaway SQLite database populated with the CSV dataset in `scripts/dump_data/drilling_campaign_2025` for ad‑hoc exploration:
