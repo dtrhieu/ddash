@@ -1,0 +1,4 @@
+id,name,rig_kind,day_rate,status
+e7d03d9c-8bef-4886-b899-a6a85f68e66e,Rig Phoenix,Jackup,115000,Active
+f19170f6-8094-41d5-b7ad-6e994ef9d15d,Rig Neptune,Jackup,120000,Active
+5f6d1ced-b3c9-49e2-8292-cc82d76fe909,Rig Orion,LWI,65000,Active

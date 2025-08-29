@@ -1,0 +1,17 @@
+id,name,field_id,platform_id,well_kind,type,lat,lon
+c38b1d9c-b824-4030-ac56-dc7368584d6a,KNT-CPP-W1,78bf4f6e-763a-42b4-965a-8a79acb616fb,f60136a1-5196-4baa-82ac-e6a75e9f48ba,PlatformWell,Development,,
+0fec0f0b-7bf4-4af1-a3b5-27eb5ca3710e,KNT-CPP-W2,78bf4f6e-763a-42b4-965a-8a79acb616fb,f60136a1-5196-4baa-82ac-e6a75e9f48ba,PlatformWell,Development,,
+c1f4deb6-c7b6-46e6-b254-dca1f9f370db,KNT-CPP-W3,78bf4f6e-763a-42b4-965a-8a79acb616fb,f60136a1-5196-4baa-82ac-e6a75e9f48ba,PlatformWell,Development,,
+1bdc36e2-1c14-4b87-afb4-6e0be39867e1,KNT-WHP-A-W1,78bf4f6e-763a-42b4-965a-8a79acb616fb,b493363c-8571-439f-b458-de582124e0cb,PlatformWell,Development,,
+f02a4856-cbc0-411b-9b68-610c12577717,KNT-WHP-A-W2,78bf4f6e-763a-42b4-965a-8a79acb616fb,b493363c-8571-439f-b458-de582124e0cb,PlatformWell,Development,,
+be305d2f-0b46-43be-b02d-5340be772abb,KNT-WHP-A-W3,78bf4f6e-763a-42b4-965a-8a79acb616fb,b493363c-8571-439f-b458-de582124e0cb,PlatformWell,Development,,
+0c96a0e1-7a80-4989-94c5-fd07fb47ae48,KNT-WHP-B-W1,78bf4f6e-763a-42b4-965a-8a79acb616fb,7a688af7-930d-45cf-be9f-2d8cc3d20b3c,PlatformWell,Development,,
+b5b8e4b8-4917-456b-a439-059cda10217b,KNT-WHP-B-W2,78bf4f6e-763a-42b4-965a-8a79acb616fb,7a688af7-930d-45cf-be9f-2d8cc3d20b3c,PlatformWell,Development,,
+8f06eb2a-1ec3-4ec7-9b61-dfb783511bcb,BLX-CPP-W1,b5175353-dd54-4fa3-a7ad-6165f492d76b,59ae822a-ad16-418f-8856-e311d6e49d6d,PlatformWell,Development,,
+a3ab062d-6ce8-4e82-a74a-774eaf845590,BLX-CPP-W2,b5175353-dd54-4fa3-a7ad-6165f492d76b,59ae822a-ad16-418f-8856-e311d6e49d6d,PlatformWell,Development,,
+c5d10dfc-dfd6-4061-8534-dac0f9f2db7b,BLX-CPP-W3,b5175353-dd54-4fa3-a7ad-6165f492d76b,59ae822a-ad16-418f-8856-e311d6e49d6d,PlatformWell,Development,,
+98f585cd-a914-4696-be2a-47a426446010,BLX-WHP-C-W1,b5175353-dd54-4fa3-a7ad-6165f492d76b,fbb1c4e3-0864-4ee2-9b5b-cb7005b33fa1,PlatformWell,Development,,
+98dabb4c-f9b6-4b11-a491-396389c43cec,BLX-WHP-C-W2,b5175353-dd54-4fa3-a7ad-6165f492d76b,fbb1c4e3-0864-4ee2-9b5b-cb7005b33fa1,PlatformWell,Development,,
+a5322475-ba21-431f-abbf-f2010442dcfa,BLX-WHP-C-W3,b5175353-dd54-4fa3-a7ad-6165f492d76b,fbb1c4e3-0864-4ee2-9b5b-cb7005b33fa1,PlatformWell,Development,,
+acedfc76-647a-439b-9b6d-44c81f97c491,KNT-EX-01,78bf4f6e-763a-42b4-965a-8a79acb616fb,,ExplorationOpenLocation,Exploration,8.85,108.12
+65ccb493-fd70-45b1-a178-ec3617637235,BLX-EX-01,b5175353-dd54-4fa3-a7ad-6165f492d76b,,ExplorationOpenLocation,Exploration,9.1,108.45

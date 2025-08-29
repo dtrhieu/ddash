@@ -1,0 +1,6 @@
+id,name,campaign_type,rig_id,field_id
+2a6187b9-2fab-4802-aa86-62dce41249c2,Rig Phoenix 2025 Campaign,RigCampaign,e7d03d9c-8bef-4886-b899-a6a85f68e66e,
+45260748-d42e-48c9-9f77-807ee554fb17,Rig Neptune 2025 Campaign,RigCampaign,f19170f6-8094-41d5-b7ad-6e994ef9d15d,
+1c268e4a-ba64-44fd-9178-21c626dfa540,Rig Orion 2025 Campaign,RigCampaign,5f6d1ced-b3c9-49e2-8292-cc82d76fe909,
+ea27e7a8-1f76-48f0-abf5-78b3eefa591f,KNT Field Ops 2025,FieldOperations,,78bf4f6e-763a-42b4-965a-8a79acb616fb
+e2ffb5ea-73d2-479e-bbe2-0292fd2d24cb,BLX Integrity 2025,FieldOperations,,b5175353-dd54-4fa3-a7ad-6165f492d76b
