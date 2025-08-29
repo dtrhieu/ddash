@@ -66,13 +66,19 @@ Key planned files:
 
 - [x] M1.2.1 Create Django apps: users, core, scheduling, calc
   - Note: users/core/scheduling scaffolds added and wired into INSTALLED_APPS; calc remains a pure module under backend/calc. To avoid name collision, decide an app name like "calc_models" later.
-- [ ] M1.2.2 Implement models per spec: User(role enum), Field, Platform, Rig, Well, Project, Campaign, CampaignProject (junction), Scenario, CalcRun, MaintenanceWindow, AuditLog
+- [x] M1.2.2 Implement models per spec: User(role enum), Field, Platform, Rig, Well, Project, Campaign, CampaignProject (junction), Scenario, CalcRun, MaintenanceWindow, AuditLog
 - [ ] M1.2.3 Add DB indexes and constraints: unique(name) where applicable; btree(name); composites on Project (rig_id, planned_start), (platform_id, planned_start); GIN on dependencies jsonb
-- [ ] M1.2.4 Make and apply initial migrations
-- [ ] M1.2.5 Register models in Django admin for visibility
+  - Status: unique(name) and btree indexes added where applicable; composites present on Project; GIN on dependencies will be added only for Postgres via a follow-up migration (SQLite skip). Planned migration name: scheduling 0002_add_gin_index_dependencies (conditional on PostgreSQL).
+- [x] M1.2.4 Make and apply initial migrations
+  - Users/core/scheduling 0001_initial created on 2025-08-29; apply with: python backend/manage.py migrate
+- [x] M1.2.5 Register models in Django admin for visibility
+  - Admins added for users.User, core.Field/Platform/Rig/Well/MaintenanceWindow/AuditLog, scheduling.Scenario/Project/Campaign/CampaignProject/CalcRun; with basic list_display, filters, search.
 - [ ] M1.2.6 Create initial superuser for local testing
+  - Plan: run python backend/manage.py createsuperuser; or set DJANGO_SUPERUSER_USERNAME, EMAIL, PASSWORD and run python backend/manage.py createsuperuser --noinput (documented below).
 - [ ] M1.2.7 Seed minimal sample fixtures for fields/platforms/wells/rigs/projects/campaigns/maintenance-windows
+  - Plan: add JSON fixtures under backend/core/fixtures/ and backend/scheduling/fixtures/ with a small coherent dataset; load via loaddata. Include one Scenario, one Rig campaign, 3 Projects across a Platform/Well with a MaintenanceWindow overlapping one project to test clashes.
 - [ ] M1.2.8 Smoke test via Django shell to create/list entities and validate constraints (rig-required types, maintenance clash)
+  - Plan: write a short script in docs or scripts/smoke_m12.py using django.setup() to create Field/Platform/Rig/Well/Projects, ensure unique constraints and composite index queries work; check a project overlapping a MaintenanceWindow is detectable by a simple query.
 
 ### M2 — AuthZ and Audit
 

@@ -51,6 +51,33 @@ Next milestones:
 - Frontend: Vite + React + TS + Tailwind; routing via React Router with Sidebar; Sheet page using AG Grid with demo data; Gantt wrapper around `frappe-gantt` with demo tasks.
 - Deploy: `deploy/docker-compose.yml` and `deploy/nginx.conf` placeholders added for M9.
 
+## Initialize SQLite DB from dump (schema-agnostic)
+To create a throwaway SQLite database populated with the CSV dataset in `scripts/dump_data/drilling_campaign_2025` for ad‑hoc exploration:
+
+- One-liner (rebuilds `backend/db.sqlite3`):
+  - `scripts/reset_sqlite_from_dump.sh`
+
+- Or run the Python loader directly (defaults to the folder above):
+  - `python3 scripts/init_sqlite_from_dump.py --db backend/db.sqlite3 --force`
+  - Pass a custom dump directory with `--dump /path/to/drilling_campaign_2025` if needed.
+
+This creates one table per CSV (e.g., `fields`, `platforms`, `rigs`, `wells`, `projects`, `campaigns`, `campaign_projects`, `maintenance_windows`) with columns from the CSV headers (stored as TEXT). The `id` column, if present, is the PRIMARY KEY.
+
+## Real app DB (Django schema + data)
+For a database that matches Django models (FKs, constraints, indexes) and loads the CSVs via ORM:
+
+- Clean rebuild and load from the built-in dump directory:
+  - `scripts/bootstrap_real_db.sh`
+
+- Or run commands manually:
+  - `rm -f backend/db.sqlite3`
+  - `python3 backend/manage.py migrate`
+  - `python3 backend/manage.py load_dump --dump scripts/dump_data/drilling_campaign_2025`
+
+Tips:
+- You can export CREATE_SUPERUSER=1 to let the script create an admin user, or later run `python3 backend/manage.py createsuperuser`.
+- Use `python3 backend/manage.py load_dump --dry-run` to validate without writing (transaction rollback).
+
 ## Frontend Dev (M6 skeleton)
 - Prerequisites: Node.js >= 18, npm >= 8.
 - Install deps:
