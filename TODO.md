@@ -159,6 +159,9 @@ Key planned files:
 - [x] M9.2.2 Configure columns: rig, well, planned_start/end, duration, cost with proper formatting
 - [x] M9.2.3 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
 - [x] M9.2.4 Implement comprehensive Projects sheet as main interface
+- [x] M9.2.10 Resolve FK IDs to human-readable names in grids (Platforms, Wells, Projects)
+- [x] M9.2.11 Normalize display formatting (enum labels, dates, money) via shared utils
+- [x] M9.2.12 Add read-only list pages for Scenarios, Campaigns, Maintenance Windows, Calc Runs and wire navigation
 - [ ] M9.2.5 Implement Create operations (add new rows for all entity types)
 - [ ] M9.2.6 Implement Update operations (inline editing with validation)
 - [ ] M9.2.7 Implement Delete operations (remove rows with confirmation)

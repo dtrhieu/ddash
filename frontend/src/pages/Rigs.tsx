@@ -3,6 +3,7 @@ import DataGrid from "../components/DataGrid";
 import type { ColDef } from "ag-grid-community";
 import { listRigs } from "../api";
 import type { Rig, Paginated } from "../api/types";
+import { enumLabel, formatDateTime, formatMoney } from "../utils/format";
 
 export default function RigsPage() {
   const [rows, setRows] = useState<Rig[]>([]);
@@ -24,25 +25,19 @@ export default function RigsPage() {
 
   const cols = useMemo<ColDef<Rig>[]>(() => [
     { field: "name", headerName: "Rig", pinned: "left", width: 200 },
-    { field: "rig_kind", headerName: "Kind", width: 140 },
+    { field: "rig_kind", headerName: "Kind", width: 140, valueFormatter: (p) => enumLabel(p.value) },
     {
       field: "day_rate",
       headerName: "Day Rate",
       width: 160,
-      valueFormatter: (p) => {
-        const v = p.value as string | number | null | undefined;
-        if (v == null) return "";
-        const n = typeof v === "string" ? parseFloat(v) : v;
-        if (Number.isNaN(n)) return String(v);
-        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(n);
-      },
+      valueFormatter: (p) => formatMoney(p.value as any),
     },
-    { field: "status", headerName: "Status", width: 140 },
+    { field: "status", headerName: "Status", width: 140, valueFormatter: (p) => enumLabel(p.value) },
     {
       field: "created_at",
       headerName: "Created",
       width: 180,
-      valueFormatter: (p) => (p.value ? new Date(p.value as string).toLocaleString() : ""),
+      valueFormatter: (p) => formatDateTime(p.value as any),
     },
     { field: "id", headerName: "ID", width: 320 },
   ], []);

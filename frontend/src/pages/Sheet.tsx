@@ -3,6 +3,7 @@ import DataGrid from '../components/DataGrid';
 import { ColDef } from 'ag-grid-community';
 import { listProjects, listFields, listPlatforms, listRigs, listWells } from '../api';
 import type { Project, Field, Platform, Rig, Well, Paginated } from '../api/types';
+import { enumLabel, formatDate, formatMoney } from '../utils/format';
 
 export default function Sheet() {
   const [rows, setRows] = useState<Project[]>([]);
@@ -67,19 +68,9 @@ export default function Sheet() {
       width: 160,
       valueGetter: (p) => (p.data?.rig ? rigMap[p.data.rig]?.name ?? p.data.rig : ''),
     },
-    { field: 'status', headerName: 'Status', width: 140 },
-    {
-      field: 'planned_start',
-      headerName: 'Planned Start',
-      width: 140,
-      valueFormatter: (p) => (p.value ? new Date(String(p.value)).toLocaleDateString() : ''),
-    },
-    {
-      field: 'planned_end',
-      headerName: 'Planned End',
-      width: 140,
-      valueFormatter: (p) => (p.value ? new Date(String(p.value)).toLocaleDateString() : ''),
-    },
+    { field: 'status', headerName: 'Status', width: 140, valueFormatter: (p) => enumLabel(p.value as any) },
+    { field: 'planned_start', headerName: 'Planned Start', width: 140, valueFormatter: (p) => formatDate(p.value as any) },
+    { field: 'planned_end', headerName: 'Planned End', width: 140, valueFormatter: (p) => formatDate(p.value as any) },
     {
       field: 'duration_days',
       headerName: 'Duration (days)',
@@ -100,13 +91,7 @@ export default function Sheet() {
         const rig = p.data?.rig ? rigMap[p.data.rig] : undefined;
         return rig?.day_rate ?? null;
       },
-      valueFormatter: (p) => {
-        const v = p.value as string | number | null | undefined;
-        if (v == null) return '';
-        const n = typeof v === 'string' ? parseFloat(v) : v;
-        if (Number.isNaN(n)) return String(v);
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(n);
-      },
+      valueFormatter: (p) => formatMoney(p.value as any),
     },
     {
       field: 'cost',
@@ -122,14 +107,10 @@ export default function Sheet() {
         if (!rate || days < 0) return null;
         return days * rate;
       },
-      valueFormatter: (p) => {
-        const v = p.value as number | null | undefined;
-        if (!v) return '';
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(v);
-      },
+      valueFormatter: (p) => formatMoney(p.value as any),
     },
-    { field: 'actual_start', headerName: 'Actual Start', width: 140, valueFormatter: (p) => (p.value ? new Date(String(p.value)).toLocaleDateString() : '') },
-    { field: 'actual_end', headerName: 'Actual End', width: 140, valueFormatter: (p) => (p.value ? new Date(String(p.value)).toLocaleDateString() : '') },
+    { field: 'actual_start', headerName: 'Actual Start', width: 140, valueFormatter: (p) => formatDate(p.value as any) },
+    { field: 'actual_end', headerName: 'Actual End', width: 140, valueFormatter: (p) => formatDate(p.value as any) },
     { field: 'id', headerName: 'ID', width: 320 },
   ], [fieldMap, platformMap, wellMap, rigMap]);
 

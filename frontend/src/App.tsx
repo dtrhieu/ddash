@@ -7,6 +7,10 @@ import Fields from "./pages/Fields";
 import Platforms from "./pages/Platforms";
 import Rigs from "./pages/Rigs";
 import Wells from "./pages/Wells";
+import Scenarios from "./pages/Scenarios";
+import Campaigns from "./pages/Campaigns";
+import MaintenanceWindows from "./pages/MaintenanceWindows";
+import CalcRuns from "./pages/CalcRuns";
 
 export default function App() {
   return (
@@ -22,6 +26,10 @@ export default function App() {
             <Route path="/platforms" element={<Platforms />} />
             <Route path="/rigs" element={<Rigs />} />
             <Route path="/wells" element={<Wells />} />
+            <Route path="/scenarios" element={<Scenarios />} />
+            <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/maintenance-windows" element={<MaintenanceWindows />} />
+            <Route path="/calc-runs" element={<CalcRuns />} />
           </Routes>
         </main>
       </div>

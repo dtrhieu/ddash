@@ -3,6 +3,7 @@ import DataGrid from "../components/DataGrid";
 import type { ColDef } from "ag-grid-community";
 import { listFields } from "../api";
 import type { Field, Paginated } from "../api/types";
+import { formatDateTime } from "../utils/format";
 
 export default function FieldsPage() {
   const [rows, setRows] = useState<Field[]>([]);
@@ -28,7 +29,7 @@ export default function FieldsPage() {
       field: "created_at",
       headerName: "Created",
       width: 180,
-      valueFormatter: (p) => (p.value ? new Date(p.value as string).toLocaleString() : ""),
+      valueFormatter: (p) => formatDateTime(p.value as any),
     },
     { field: "id", headerName: "ID", width: 320 },
   ], []);
