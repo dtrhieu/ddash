@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
-import os
-from pathlib import Path
-import sys
 
-import django
 from django.test import TestCase
 
 from core.models import Field as CoreField, Platform, Rig, Well
@@ -15,13 +11,6 @@ from core.serializers import (
 )
 from scheduling.models import Project
 from scheduling.serializers import ProjectSerializer
-
-# Configure Django for tests run via `python -m unittest`
-ROOT = Path(__file__).resolve().parents[2]
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
-sys.path.insert(0, str(ROOT / "backend"))
-
-django.setup()
 
 
 class SerializerSmokeTests(TestCase):

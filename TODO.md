@@ -277,7 +277,7 @@ Frontend routes (planned):
 - [x] Create repo structure
 - [x] Bootstrap Django + DRF foundation
 - [x] Scaffold React + Vite + TS with basic AG Grid
-- [ ] **NEXT: Create DRF serializers and ViewSets for all entities (M2)**
+- [x] **NEXT: Create DRF serializers and ViewSets for all entities (M2)**
 - [ ] **NEXT: Build API client and connect to real data (M3)**
 - [ ] **NEXT: Implement comprehensive Projects sheet interface**
 

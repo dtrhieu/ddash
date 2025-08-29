@@ -69,6 +69,17 @@ def check_constraints():
     assert cps.count() == 2
 
 
+def check_health_endpoint():
+    from django.test import Client
+
+    client = Client()
+    resp = client.get("/api/health")
+    assert resp.status_code == 200, f"/api/health returned {resp.status_code}"
+    data = resp.json()
+    assert data.get("ok") is True
+    assert data.get("service") == "ddash-backend"
+
+
 if __name__ == "__main__":
     load_fixtures()
     check_constraints()
