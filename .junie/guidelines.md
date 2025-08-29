@@ -1,7 +1,5 @@
 Drilling Campaign Tracker — Development Guidelines (Project‑specific)
 
-Audience: advanced developers contributing to this repo. This file captures build/config specifics, testing workflow, and dev conventions that are particular to this project.
-
 1) Backend build and configuration
 - Runtime: Python 3.12, Django 5.2, DRF 3.15. SQLite by default for local dev; Postgres optional via env.
 - Dependency management (pip-tools):
