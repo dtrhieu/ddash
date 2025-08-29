@@ -95,8 +95,8 @@ Key planned files:
 ### M3 — Sheet-Like UI Foundation (PRIORITY 2 - MVP Phase 1)
 
 - [x] M3.1 Create TypeScript API client with proper error handling
-- [ ] M3.2 Build type definitions matching backend models
-- [ ] M3.3 Implement CRUD operations for all entities in API client
+- [x] M3.2 Build type definitions matching backend models
+- [x] M3.3 Implement CRUD operations for all entities in API client
 - [ ] M3.4 Create base AG Grid components with proper configuration
 - [ ] M3.5 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
 - [ ] M3.6 Implement comprehensive Projects sheet as main interface
