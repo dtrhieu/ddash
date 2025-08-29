@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { themeBalham } from 'ag-grid-community';
 import { ColDef } from 'ag-grid-community';
 import { CampaignWell } from '../types';
 
@@ -178,19 +177,19 @@ export default function Sheet() {
     <div className="sheet-container" style={{ height: '100vh', padding: '20px' }}>
       <h1>Drilling Campaign - Sheet View</h1>
       <div
-        className="ag-theme-alpine"
         style={{
           height: 'calc(100vh - 120px)',
           width: '100%'
         }}
       >
         <AgGridReact
+          theme={themeBalham}
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
           pagination={true}
           paginationPageSize={20}
-          paginationPageSizeSelector={{ values: [10, 20, 50, 100] }}
+          paginationPageSizeSelector={[10, 20, 50, 100]}
           animateRows={true}
         />
       </div>
