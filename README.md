@@ -234,15 +234,12 @@ For a database that matches Django models (FKs, constraints, indexes) you have t
   - `scripts/bootstrap_real_db.sh`
 
 - Or run commands manually (CSV dump path):
-  - `rm -f backend/db.sqlite3`
+  - `rm -f backend/db.sqlite3` (Unix/Linux) or `Remove-Item backend\db.sqlite3 -Force` (Windows)
   - `python3 backend/manage.py migrate`
   - `python3 backend/manage.py load_dump --dump scripts/dump_data/drilling_campaign_2025`
 
 - Or load minimal fixtures (M1.2.7):
   - `python3 backend/manage.py loaddata backend/core/fixtures/initial_core.json backend/scheduling/fixtures/initial_scheduling.json`
-
-- M1.2.8 smoke test:
-  - `python3 scripts/smoke_m12.py`
 
 Tips:
 - You can export CREATE_SUPERUSER=1 to let the script create an admin user, or later run `python3 backend/manage.py createsuperuser`.

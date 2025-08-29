@@ -4,8 +4,8 @@ Context snapshot
 - Backend: Python 3.12. Django/DRF are scaffolded; minimal project exists with health endpoint and env-driven settings. Domain apps and APIs for M1.2–M3 are pending implementation. Pure calc utilities exist in backend/calc/engine.py.
 - Frontend: React + Vite + TypeScript scaffold present; basic Sheet and Gantt pages exist but are not wired to a backend API.
 - Tooling decisions (from README):
-  - Python: black, ruff, isort via pre-commit
-  - JS/TS: eslint, prettier via pre-commit mirrors
+  - Python: ruff (lint) + ruff-format (format) via pre-commit; import sorting via Ruff's isort rules
+  - JS/TS: eslint via pre-commit mirror (no Prettier configured)
   - Dependency mgmt for Python: pip-tools (requirements.in/lock via pip-compile)
 - Deploy: docker-compose and nginx stubs exist in deploy/.
 
@@ -14,7 +14,7 @@ Build and configuration
 - Version: Python 3.12 (see backend/pyproject.toml configuration for tools).
 - Virtualenv: optional for now. If you set up one, use Python 3.12 to avoid tooling mismatches.
 - Code style tools configured in pyproject:
-  - black (line-length 100), isort (profile black), ruff (E, F, I, UP, B, SIM). Run via pre-commit.
+  - ruff (lint: E, F, I, UP, B, SIM) + ruff-format (format, line-length 100). Import sorting via Ruff's isort rules. Run via pre-commit.
 - Pre-commit hooks:
   - Install: pipx install pre-commit (or pip install pre-commit)
   - Activate: pre-commit install
@@ -55,18 +55,18 @@ Milestone-specific guidance (this task)
 
 Code quality and conventions
 - Python
-  - Formatting: black (line length 100)
-  - Imports: isort (profile black)
+  - Formatting: ruff-format (line length 100)
+  - Imports: sorted by Ruff's isort rules (no separate isort invocation)
   - Linting: ruff (E, F, I, UP, B, SIM enabled)
   - Typing: use modern typing (from __future__ import annotations). Preserve annotations on new functions and models.
   - Namespaces: prefer flat modules for pure calc; keep side-effect-free imports in calc.
 
 - JavaScript/TypeScript
-  - ESLint + Prettier via pre-commit mirrors. No additional node steps needed for M1.2–M3.
+  - ESLint via pre-commit mirror (no Prettier configured). No additional node steps needed for M1.2–M3.
 
 Local dev workflow tips
 - Keep backend and frontend decoupled until API contracts stabilize. For calc changes, only touch backend/calc/* and tests under backend/tests/.
-- When upgrading tooling, ensure pre-commit hooks still run on Python 3.12 and that ruff/black versions remain compatible with pyproject settings.
+- When upgrading tooling, ensure pre-commit hooks still run on Python 3.12 and that ruff/ruff-format versions remain compatible with pyproject settings.
 
 Troubleshooting
 - ImportError for backend.calc.engine during tests:
@@ -79,3 +79,4 @@ Changelog for this guideline file
 - 2025-08-27: Updated Python version references to 3.12 and aligned tool target versions.
 - 2025-08-28: Updated context snapshot per TODO/SPEC: backend minimal Django scaffolding exists; frontend Sheet/Gantt scaffolds present.
 - 2025-08-29: Updated to include M1.2–M3 execution guidance for this task.
+- 2025-08-29: Aligned with .pre-commit-config — switched to Ruff + Ruff-Format for Python (no Black/Isort hooks); ESLint only for JS/TS (no Prettier).
