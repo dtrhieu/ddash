@@ -1,81 +1,125 @@
-Drilling Campaign Tracker — Development Guidelines
+Drilling Campaign Tracker — Development Guidelines (Project‑specific)
 
-Context snapshot
-- Backend: Python 3.12. Django/DRF are scaffolded; minimal project exists with health endpoint and env-driven settings. Domain apps and APIs for M1.2–M3 are pending implementation. Pure calc utilities exist in backend/calc/engine.py.
-- Frontend: React + Vite + TypeScript scaffold present; basic Sheet and Gantt pages exist but are not wired to a backend API.
-- Tooling decisions (from README):
-  - Python: black, ruff, isort via pre-commit
-  - JS/TS: eslint, prettier via pre-commit mirrors
-  - Dependency mgmt for Python: pip-tools (requirements.in/lock via pip-compile)
-- Deploy: docker-compose and nginx stubs exist in deploy/.
+Audience: advanced developers contributing to this repo. This file captures build/config specifics, testing workflow, and dev conventions that are particular to this project.
 
-Build and configuration
-1) Python toolchain (backend)
-- Version: Python 3.12 (see backend/pyproject.toml configuration for tools).
-- Virtualenv: optional for now. If you set up one, use Python 3.12 to avoid tooling mismatches.
-- Code style tools configured in pyproject:
-  - black (line-length 100), isort (profile black), ruff (E, F, I, UP, B, SIM). Run via pre-commit.
-- Pre-commit hooks:
-  - Install: pipx install pre-commit (or pip install pre-commit)
-  - Activate: pre-commit install
-  - Run manually: pre-commit run -a
+1) Backend build and configuration
+- Runtime: Python 3.12, Django 5.2, DRF 3.15. SQLite by default for local dev; Postgres optional via env.
+- Dependency management (pip-tools):
+  - User installs should use the compiled lock files under backend/:
+    - Production/dev runtime: pip install -r backend/requirements.txt
+    - Dev tooling (pytest, ruff, pre-commit, pip-tools): pip install -r backend/requirements-dev.txt
+  - If you must change dependencies: edit backend/requirements.in or requirements-dev.in and recompile with pip-compile (not needed for typical feature work).
+- Django settings: backend/app/settings.py
+  - Database selection is env-driven. Precedence:
+    1) DATABASE_URL (postgres://user:pass@host:port/db)
+    2) POSTGRES_HOST (+ POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT)
+    3) Fallback: SQLite file at backend/db.sqlite3
+  - Caching: REDIS_URL enables RedisCache; otherwise defaults to LocMemCache.
+  - CORS for Vite: http://localhost:5173 enabled.
+- Common local workflow:
+  - Migrations: python backend/manage.py migrate
+  - Superuser (interactive): python backend/manage.py createsuperuser
+  - Superuser (non-interactive): export DJANGO_SUPERUSER_USERNAME/EMAIL/PASSWORD then python backend/manage.py createsuperuser --noinput
+  - Run dev server: python backend/manage.py runserver (ALLOWED_HOSTS includes localhost, 127.0.0.1, testserver)
+- Seed data options:
+  - Minimal JSON fixtures: python backend/manage.py loaddata backend/core/fixtures/initial_core.json backend/scheduling/fixtures/initial_scheduling.json
+  - CSV demo dataset via custom command: python backend/manage.py load_dump --dump scripts/dump_data/drilling_campaign_2025
+  - Smoke script (loads fixtures and validates constraints): python scripts/smoke_m12.py
 
-2) Frontend toolchain
-- Skeleton only; Node will be needed in M6+. No install/build required for M1.2–M3.
+2) Frontend shortcuts (from repo root)
+- Proxy scripts in package.json delegate into frontend/:
+  - Install deps: npm run install:frontend
+  - Dev server: npm run dev
+  - Build: npm run build
+  - Preview: npm run preview
+  - Lint: npm run lint
+- Default Vite dev origin is http://localhost:5173; CORS is pre-wired in backend settings.
 
-3) Namespace package layout note
-- The backend directory uses Python implicit namespace packages (no __init__.py). This affects test discovery (see Testing) and imports.
+3) API surface that aids local testing
+- Health: GET /api/health — DB-independent readiness JSON.
+- Schema-lite: GET /api/schema-lite — DRF router enumeration without external schema libs; used by tests to assert endpoint count/shape.
+- Minimal docs: GET /api/docs/ — simple HTML template listing endpoints (TemplateView based).
+- Core resources (registered in DefaultRouter): /api/fields/, /api/platforms/, /api/rigs/, /api/wells/, /api/maintenance-windows/, /api/scenarios/, /api/projects/, /api/campaigns/, /api/campaign-projects/, /api/calc-runs/
 
-Testing
-- For M1.2–M3, prioritize unit tests for pure calc and minimal Django model validation where feasible, using Python’s built-in unittest. Avoid introducing pytest for now.
+4) Testing (pytest + pytest-django)
+- Configuration: see pytest.ini at repo root
+  - DJANGO_SETTINGS_MODULE=app.settings
+  - pythonpath=backend (so manage.py sibling imports just work)
+  - testpaths=backend/tests (only tests under that directory are collected by default)
+  - Naming: files test_*.py or *_test.py; classes Test* or *Tests; functions test_*
+  - Default addopts: -ra -q (adjust with -v locally if needed)
+- How to run:
+  - All tests: pytest
+  - Verbose: pytest -v
+  - Single file: pytest backend/tests/test_api_crud_and_lists.py -v
+  - Single test: pytest backend/tests/test_api_crud_and_lists.py::test_list_endpoints_and_crud_field -v
+- Database usage patterns:
+  - Unit-style tests without DB can use plain functions/classes — no marker.
+  - Django TestCase implies transaction per test method with automatic rollback; no explicit marker required.
+  - For function-style tests that hit the DB, add @pytest.mark.django_db. If you call management commands that issue flush or need transactional behavior, use transaction=True (see test_api_crud_and_lists.py).
+  - Fixtures loading inside tests is done with django.core.management.call_command('loaddata', ...). Prefer flushing explicitly (call_command('flush', interactive=False)) for deterministic runs when mutating global state.
+- HTTP client:
+  - For DRF API tests use rest_framework.test.APIClient for JSON convenience.
+  - For plain Django views (like /api/docs/) rest_framework client also works; Django test Client is available if needed.
+- Example patterns in this repo:
+  - API and schema smoke: backend/tests/test_api_docs_and_schema.py covers /api/schema-lite and /api/docs/.
+  - Serializer validation: backend/tests/test_serializers.py shows TestCase-based roundtrip and validation logic.
+  - CRUD and list endpoints with fixture bootstrapping: backend/tests/test_api_crud_and_lists.py demonstrates end-to-end list/create/retrieve/update/delete with deterministic DB state and fixture sets.
+- Demonstration of adding a new test (validated during preparation of this document):
+  - Temporary example created at backend/tests/test_demo_junie_temp.py with a trivial assertion.
+  - Ran pytest and verified collection/passing.
+  - Removed the temporary file to keep the tree clean, as this document is the only artifact to be added by this task.
+  - To replicate yourself:
+    1) Create backend/tests/test_demo_local.py with:
+       def test_demo_passes():
+           assert 1 + 1 == 2
+    2) Run: pytest -q
+    3) Remove the demo file after verifying.
 
-Quick start: running tests
-- Module-based invocation (works with implicit namespace packages):
-  python3 -m unittest backend.tests.test_engine -v
+5) Adding new tests — quick guidance
+- Location: place backend tests under backend/tests/. Keep unit tests close to subject under apps when it materially improves locality, but ensure they’re discoverable via testpaths or use -k/-p options (default setup assumes backend/tests/).
+- Style:
+  - Prefer pytest functional style for API and serializer behaviors; use Django TestCase where setUp/tearDown and class isolation is useful.
+  - Mark DB needs explicitly with @pytest.mark.django_db for function tests; prefer TestCase for model/serializer tests that can benefit from its isolation.
+  - Keep API payloads minimal and assert both status codes and essential shape/keys.
+- Determinism:
+  - If tests modify global DB state, flush and reload fixtures per test or per class to avoid cross-test coupling (see test_api_crud_and_lists.py).
+  - Avoid relying on implicit ordering; assert on content, not sequence, unless order is explicitly part of the behavior.
 
-- Discovery can miss tests because tests/ is not a package. If you want discovery later, convert to packages first.
+6) Code quality and conventions (backend)
+- Lint/format: ruff configured in backend/pyproject.toml
+  - Lint rules: E, F, I (isort), UP, B, SIM; target Python 3.12, line length 100, double quotes enforced.
+  - Excludes migrations from lint.
+- Pre-commit: repository expects pre-commit to be installed and hooks set up:
+  - pipx install pre-commit (or pip install pre-commit)
+  - pre-commit install
+  - Hooks cover Python (ruff/black/isort mirrors) and frontend (eslint/prettier mirrors), as noted in README.
+- DB model guidance:
+  - SQLite is acceptable for local tests; Postgres features (e.g., GIN index) should be guarded by conditional migrations and tested behind feature detection.
+  - Use explicit unique constraints and indexes as described in TODO.md. Composite indexes on scheduling.Project are already present.
 
-Adding tests
-- Location: backend/tests/ with filenames test_*.py.
-- Imports: import from backend.calc.engine or from Django apps using the fully-qualified path (e.g., backend.users.models) once created.
-- Example template remains the same as before.
+7) Useful scripts and flows
+- scripts/smoke_m12.py — sets up Django, loads initial fixtures, verifies maintenance overlap and basic links, and pings /api/health. Good for quick local sanity after DB or model changes.
+- README contains end-to-end DB bootstrap instructions for both SQLite-from-CSV and real Django schema + fixtures. Prefer the "Real app DB" path for test-driven backend work.
 
-Milestone-specific guidance (this task)
-- M1.2 (Base apps and data model):
-  - Create Django apps: users, core, scheduling, calc (models-only for calc). Keep apps minimal (apps.py, models.py, admin.py).
-  - Implement models per spec with clear enums and indexes. Prefer PostgreSQL-friendly fields but keep SQLite compatibility for local dev.
-  - Add initial migrations; do not add business logic beyond field constraints.
-  - Register models in admin for visibility. Seed minimal fixtures if time allows.
-- M2 (AuthZ and Audit):
-  - Use Django’s session auth locally. Define role choices on User (Viewer, Editor, Admin) and basic DRF permission classes mapping to roles.
-  - Implement AuditLog via model signals capturing before/after snapshots for create/update/delete with user attribution where available.
-- M3 (Core APIs):
-  - Implement read/write DRF viewsets for core entities with list/retrieve/create/update/destroy. Add basic filtering, pagination, and validation hooks.
-  - Keep permissions simple: Viewer = read-only; Editor/Admin = write.
+8) Troubleshooting notes (test/dev)
+- Tests fail with missing fixtures: ensure backend/core/fixtures/initial_core.json and backend/scheduling/fixtures/initial_scheduling.json exist and are accessible; they are committed to the repo.
+- Settings not picked up in pytest: run from repo root (pytest.ini lives there and sets pythonpath/backend). Otherwise pass -c pytest.ini.
+- Port conflicts on frontend dev: run npm --prefix frontend run dev -- --port 5173 or adjust vite config; backend CORS list already includes localhost:5173.
+- Intermittent DB state: prefer flush + loaddata per test module/class when performing CRUD that depends on specific initial records.
 
-Code quality and conventions
-- Python
-  - Formatting: black (line length 100)
-  - Imports: isort (profile black)
-  - Linting: ruff (E, F, I, UP, B, SIM enabled)
-  - Typing: use modern typing (from __future__ import annotations). Preserve annotations on new functions and models.
-  - Namespaces: prefer flat modules for pure calc; keep side-effect-free imports in calc.
+9) Minimal local bring-up checklist
+- Backend:
+  - python -m venv backend/.venv && source backend/.venv/bin/activate
+  - pip install -r backend/requirements-dev.txt
+  - python backend/manage.py migrate
+  - python backend/manage.py loaddata backend/core/fixtures/initial_core.json backend/scheduling/fixtures/initial_scheduling.json
+  - python backend/manage.py runserver
+- Frontend:
+  - npm run install:frontend
+  - npm run dev
+- Tests:
+  - pytest -q (expect all green)
 
-- JavaScript/TypeScript
-  - ESLint + Prettier via pre-commit mirrors. No additional node steps needed for M1.2–M3.
-
-Local dev workflow tips
-- Keep backend and frontend decoupled until API contracts stabilize. For calc changes, only touch backend/calc/* and tests under backend/tests/.
-- When upgrading tooling, ensure pre-commit hooks still run on Python 3.12 and that ruff/black versions remain compatible with pyproject settings.
-
-Troubleshooting
-- ImportError for backend.calc.engine during tests:
-  - Run from the repo root, and use module-based unittest invocation.
-- NO TESTS RAN using discover:
-  - Expected without package __init__.py. Use module invocation or convert tests dir into a package.
-
-Changelog for this guideline file
-- 2025-08-27: Initial guidelines, validated sample unittest for calc engine, documented namespace/discovery caveats and dev tooling configuration.
-- 2025-08-27: Updated Python version references to 3.12 and aligned tool target versions.
-- 2025-08-28: Updated context snapshot per TODO/SPEC: backend minimal Django scaffolding exists; frontend Sheet/Gantt scaffolds present.
-- 2025-08-29: Updated to include M1.2–M3 execution guidance for this task.
+Status note for this document
+- All instructions above were validated against the current tree:
