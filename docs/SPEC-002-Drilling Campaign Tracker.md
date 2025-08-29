@@ -259,3 +259,10 @@ Well ||--o{ Project
 - **Option B: Bare-metal/VM**: systemd services for `gunicorn` (Django), `celery`, `nginx`; PostgreSQL & Redis packages.
 
 - Backups: nightly `pg_dump`, weekly base + WAL archiving; Redis persistence disabled (broker only).
+
+
+## Developer Tooling (Repo)
+
+- Pre-commit hooks: Ruff (lint: E, F, I, UP, B, SIM) and Ruff-Format (format, line length 100) for Python; ESLint for JS/TS files under `frontend/`.
+- Import sorting is handled by Ruff's isort rules (no separate isort hook).
+- No Black or Prettier hooks are configured in this repository to keep the toolchain minimal and aligned with `backend/pyproject.toml` and `.pre-commit-config.yaml`.

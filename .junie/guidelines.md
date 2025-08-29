@@ -77,7 +77,7 @@ Audience: advanced developers contributing to this repo. This file captures buil
     3) Remove the demo file after verifying.
 
 5) Adding new tests — quick guidance
-- Location: place backend tests under backend/tests/. Keep unit tests close to subject under apps when it materially improves locality, but ensure they’re discoverable via testpaths or use -k/-p options (default setup assumes backend/tests/).
+- Location: place backend tests under backend/tests/. Keep unit tests close to subject under apps when it materially improves locality, but ensure they're discoverable via testpaths or use -k/-p options (default setup assumes backend/tests/).
 - Style:
   - Prefer pytest functional style for API and serializer behaviors; use Django TestCase where setUp/tearDown and class isolation is useful.
   - Mark DB needs explicitly with @pytest.mark.django_db for function tests; prefer TestCase for model/serializer tests that can benefit from its isolation.
@@ -121,5 +121,33 @@ Audience: advanced developers contributing to this repo. This file captures buil
 - Tests:
   - pytest -q (expect all green)
 
+Code quality and conventions
+- Python
+  - Formatting: ruff-format (line length 100)
+  - Imports: sorted by Ruff's isort rules (no separate isort invocation)
+  - Linting: ruff (E, F, I, UP, B, SIM enabled)
+  - Typing: use modern typing (from __future__ import annotations). Preserve annotations on new functions and models.
+  - Namespaces: prefer flat modules for pure calc; keep side-effect-free imports in calc.
+
+- JavaScript/TypeScript
+  - ESLint via pre-commit mirror (no Prettier configured). No additional node steps needed for M1.2–M3.
+
+Local dev workflow tips
+- Keep backend and frontend decoupled until API contracts stabilize. For calc changes, only touch backend/calc/* and tests under backend/tests/.
+- When upgrading tooling, ensure pre-commit hooks still run on Python 3.12 and that ruff/ruff-format versions remain compatible with pyproject settings.
+
+Troubleshooting
+- ImportError for backend.calc.engine during tests:
+  - Run from the repo root, and use module-based unittest invocation.
+- NO TESTS RAN using discover:
+  - Expected without package __init__.py. Use module invocation or convert tests dir into a package.
+
 Status note for this document
-- All instructions above were validated against the current tree:
+- All instructions above were validated against the current tree.
+
+Changelog for this guideline file
+- 2025-08-27: Initial guidelines, validated sample unittest for calc engine, documented namespace/discovery caveats and dev tooling configuration.
+- 2025-08-27: Updated Python version references to 3.12 and aligned tool target versions.
+- 2025-08-28: Updated context snapshot per TODO/SPEC: backend minimal Django scaffolding exists; frontend Sheet/Gantt scaffolds present.
+- 2025-08-29: Updated to include M1.2–M3 execution guidance for this task.
+- 2025-08-29: Aligned with .pre-commit-config — switched to Ruff + Ruff-Format for Python (no Black/Isort hooks); ESLint only for JS/TS (no Prettier).
