@@ -75,10 +75,10 @@ Key planned files:
   - Admins added for users.User, core.Field/Platform/Rig/Well/MaintenanceWindow/AuditLog, scheduling.Scenario/Project/Campaign/CampaignProject/CalcRun; with basic list_display, filters, search.
 - [x] M1.2.6 Create initial superuser for local testing
   - Plan: run python backend/manage.py createsuperuser; or set DJANGO_SUPERUSER_USERNAME, EMAIL, PASSWORD and run python backend/manage.py createsuperuser --noinput (documented below).
-- [ ] M1.2.7 Seed minimal sample fixtures for fields/platforms/wells/rigs/projects/campaigns/maintenance-windows
-  - Plan: add JSON fixtures under backend/core/fixtures/ and backend/scheduling/fixtures/ with a small coherent dataset; load via loaddata. Include one Scenario, one Rig campaign, 3 Projects across a Platform/Well with a MaintenanceWindow overlapping one project to test clashes.
-- [ ] M1.2.8 Smoke test via Django shell to create/list entities and validate constraints (rig-required types, maintenance clash)
-  - Plan: write a short script in docs or scripts/smoke_m12.py using django.setup() to create Field/Platform/Rig/Well/Projects, ensure unique constraints and composite index queries work; check a project overlapping a MaintenanceWindow is detectable by a simple query.
+- [x] M1.2.7 Seed minimal sample fixtures for fields/platforms/wells/rigs/projects/campaigns/maintenance-windows
+  - Implemented: JSON fixtures added under backend/core/fixtures/initial_core.json and backend/scheduling/fixtures/initial_scheduling.json. Load via: python backend/manage.py loaddata backend/core/fixtures/initial_core.json backend/scheduling/fixtures/initial_scheduling.json.
+- [x] M1.2.8 Smoke test via Django shell to create/list entities and validate constraints (rig-required types, maintenance clash)
+  - Implemented: scripts/smoke_m12.py verifies maintenance overlap and campaign ordering. Run with: python scripts/smoke_m12.py.
 
 ### M2 — AuthZ and Audit
 

@@ -64,15 +64,24 @@ To create a throwaway SQLite database populated with the CSV dataset in `scripts
 This creates one table per CSV (e.g., `fields`, `platforms`, `rigs`, `wells`, `projects`, `campaigns`, `campaign_projects`, `maintenance_windows`) with columns from the CSV headers (stored as TEXT). The `id` column, if present, is the PRIMARY KEY.
 
 ## Real app DB (Django schema + data)
-For a database that matches Django models (FKs, constraints, indexes) and loads the CSVs via ORM:
+For a database that matches Django models (FKs, constraints, indexes) you have two options:
+
+- Minimal fixtures (recommended for M1.2.7–M1.2.8): load small coherent JSON fixtures shipped in this repo.
+- CSV dump (optional for larger demo datasets): use scripts/dump_data/drilling_campaign_2025 with the load_dump command.
 
 - Clean rebuild and load from the built-in dump directory:
   - `scripts/bootstrap_real_db.sh`
 
-- Or run commands manually:
+- Or run commands manually (CSV dump path):
   - `rm -f backend/db.sqlite3`
   - `python3 backend/manage.py migrate`
   - `python3 backend/manage.py load_dump --dump scripts/dump_data/drilling_campaign_2025`
+
+- Or load minimal fixtures (M1.2.7):
+  - `python3 backend/manage.py loaddata backend/core/fixtures/initial_core.json backend/scheduling/fixtures/initial_scheduling.json`
+
+- M1.2.8 smoke test:
+  - `python3 scripts/smoke_m12.py`
 
 Tips:
 - You can export CREATE_SUPERUSER=1 to let the script create an admin user, or later run `python3 backend/manage.py createsuperuser`.

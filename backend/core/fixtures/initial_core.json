@@ -1,0 +1,8 @@
+[
+  {"model": "users.user", "pk": "11111111-1111-1111-1111-111111111111", "fields": {"username": "admin", "is_superuser": true, "is_staff": true, "password": "!", "role": "admin", "created_at": "2025-08-29T00:00:00Z"}},
+  {"model": "core.field", "pk": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "fields": {"name": "North Sea", "created_at": "2025-08-29T00:00:00Z"}},
+  {"model": "core.platform", "pk": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "fields": {"name": "Platform A", "field": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "created_at": "2025-08-29T00:00:00Z"}},
+  {"model": "core.rig", "pk": "cccccccc-cccc-cccc-cccc-cccccccccccc", "fields": {"name": "Rig Alpha", "rig_kind": "jackup", "day_rate": "100000.00", "status": "active", "created_at": "2025-08-29T00:00:00Z"}},
+  {"model": "core.well", "pk": "dddddddd-dddd-dddd-dddd-dddddddddddd", "fields": {"name": "Well-1", "field": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "platform": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "well_kind": "platform_well", "type": "development", "created_at": "2025-08-29T00:00:00Z"}},
+  {"model": "core.maintenancewindow", "pk": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "fields": {"platform": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "start_date": "2025-09-05", "end_date": "2025-09-10", "reason": "Planned maintenance", "created_at": "2025-08-29T00:00:00Z"}}
+]
