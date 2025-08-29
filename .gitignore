@@ -76,3 +76,6 @@ coverage/
 .idea/
 /frontend/WARP.md
 .kilocodemodes
+# Databases
+db.sqlite3
+*.sqlite3
