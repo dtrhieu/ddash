@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import {
-  Table,
-  GanttChart,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Table, GanttChart, ChevronLeft, ChevronRight, MapPin, Layers, Wrench, Droplet } from "lucide-react";
 
 interface NavItem {
   to: string;
@@ -14,8 +9,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { to: "/sheet", label: "Sheet", icon: Table },
+  { to: "/sheet", label: "Projects Sheet", icon: Table },
   { to: "/gantt", label: "Gantt", icon: GanttChart },
+  { to: "/fields", label: "Fields", icon: MapPin },
+  { to: "/platforms", label: "Platforms", icon: Layers },
+  { to: "/rigs", label: "Rigs", icon: Wrench },
+  { to: "/wells", label: "Wells", icon: Droplet },
 ];
 
 export default function Sidebar() {

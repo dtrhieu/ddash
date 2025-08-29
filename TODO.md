@@ -97,9 +97,9 @@ Key planned files:
 - [x] M3.1 Create TypeScript API client with proper error handling
 - [x] M3.2 Build type definitions matching backend models
 - [x] M3.3 Implement CRUD operations for all entities in API client
-- [ ] M3.4 Create base AG Grid components with proper configuration
-- [ ] M3.5 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
-- [ ] M3.6 Implement comprehensive Projects sheet as main interface
+- [x] M3.4 Create base AG Grid components with proper configuration
+- [x] M3.5 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
+- [x] M3.6 Implement comprehensive Projects sheet as main interface
 - [ ] M3.7 Add inline editing, validation, and relationship handling
 - [ ] M3.8 Implement filtering, sorting, and basic bulk operations
 
@@ -157,8 +157,8 @@ Key planned files:
 #### M9.2 — Sheet View Implementation (PRIORITY 2)
 - [x] M9.2.1 Set up AG Grid component with basic configuration and data source
 - [x] M9.2.2 Configure columns: rig, well, planned_start/end, duration, cost with proper formatting
-- [ ] M9.2.3 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
-- [ ] M9.2.4 Implement comprehensive Projects sheet as main interface
+- [x] M9.2.3 Build individual entity management sheets (Fields, Platforms, Rigs, Wells)
+- [x] M9.2.4 Implement comprehensive Projects sheet as main interface
 - [ ] M9.2.5 Implement Create operations (add new rows for all entity types)
 - [ ] M9.2.6 Implement Update operations (inline editing with validation)
 - [ ] M9.2.7 Implement Delete operations (remove rows with confirmation)
