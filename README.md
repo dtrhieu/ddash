@@ -2,7 +2,7 @@
 
 Local-first MVP to plan and monitor drilling campaigns with a sheet-like UI, Gantt visualization, and a Python calc engine.
 
-Source spec: doc/SPEC-002-Drilling Campaign Tracker.md
+Source spec: docs/SPEC-002-Drilling Campaign Tracker.md
 
 ## Decisions (M0)
 - Backend dependency tooling: pip-tools (requirements.in -> requirements.txt via pip-compile)
@@ -11,8 +11,8 @@ Source spec: doc/SPEC-002-Drilling Campaign Tracker.md
   - Python: black, ruff, isort (via pre-commit)
   - TypeScript/JS: eslint, prettier (via pre-commit mirrors)
 
-## Repo layout (bootstrap)
-- backend/ — Django + DRF + Celery + calc (scaffolded in M1)
+## Repo Layout (bootstrap)
+- backend/ — Django + DRF (+ CORS) + calc placeholder (scaffolded in M1; Celery planned)
 - frontend/ — React + Vite + TypeScript (scaffolded in M6)
 - deploy/ — Dockerfiles, docker-compose, nginx (filled in M9)
 - docs/ — additional docs and ADRs (optional, complement to existing doc/)
@@ -30,21 +30,28 @@ Planned key files (placeholders added where possible in M0):
 - frontend/src/pages/Gantt.tsx
 - frontend/src/pages/Sheet.tsx
 
-Spec: doc/SPEC-002-Drilling Campaign Tracker.md
+Spec: docs/SPEC-002-Drilling Campaign Tracker.md
 
-## Getting started (M0)
+## Getting Started (M0)
 1) Ensure git is available; repo has been initialized via M0.
 2) Install pre-commit (pipx or pip): pipx install pre-commit
 3) Install git hooks: pre-commit install
-4) Python toolchain is configured in backend/pyproject.toml (no runtime deps yet).
-5) ESLint/Prettier hooks are configured via mirrors; Node will be required when we scaffold the frontend in M6.
+4) Python toolchain is configured in backend/pyproject.toml.
+5) Node is required for the frontend (already scaffolded). From repo root you can run:
+   - npm run install:frontend
+   - npm run dev | build | preview | lint (proxies to frontend/)
 
 Next milestones:
-- M1: Bootstrap Django + DRF + base apps and settings
-- M6: Scaffold React + Vite + TS and baseline routes/components
-- M9: Compose & Nginx packaging for local
+- M1: Base apps and data model (pending)
+- M6: Auth + API client + protected routes (in progress)
+- M9: Compose & Nginx packaging (placeholders added)
 
-## Frontend dev (M6 skeleton)
+## Current Progress
+- Backend: Django + DRF + CORS configured; env-driven DB/Redis settings; health endpoint at `/api/health`; calc/engine placeholder functions.
+- Frontend: Vite + React + TS + Tailwind; routing via React Router with Sidebar; Sheet page using AG Grid with demo data; Gantt wrapper around `frappe-gantt` with demo tasks.
+- Deploy: `deploy/docker-compose.yml` and `deploy/nginx.conf` placeholders added for M9.
+
+## Frontend Dev (M6 skeleton)
 - Prerequisites: Node.js >= 18, npm >= 8.
 - Install deps:
   - From repo root: npm run install:frontend

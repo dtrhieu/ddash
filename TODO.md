@@ -132,7 +132,7 @@ Planned functions:
 - [ ] M6.2.4 Create TypeScript types for API responses and requests
 
 #### M6.3 — Routing & Protection
-- [ ] M6.3.1 Set up React Router for navigation
+- [x] M6.3.1 Set up React Router for navigation
 - [ ] M6.3.2 Implement protected routes with role-based access control
 - [ ] M6.3.3 Create route guards and authentication checks
 
@@ -148,7 +148,7 @@ Planned functions:
 
 #### M6.6 — Integration & Layout
 - [ ] M6.6.1 Update main.tsx to use router and authentication provider
-- [ ] M6.6.2 Connect existing Gantt and Sheet pages to the routing system
+- [x] M6.6.2 Connect existing Gantt and Sheet pages to the routing system
 - [ ] M6.6.3 Add navigation layout with role-based menu items
 
 #### M6.7 — Testing & Verification
