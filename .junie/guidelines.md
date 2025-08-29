@@ -1,100 +1,81 @@
 Drilling Campaign Tracker — Development Guidelines
 
 Context snapshot
-- Backend: Python 3.12. Django/DRF/Celery are planned; minimal scaffolding exists (manage.py and app/settings.py/urls.py), but domain apps and APIs are not implemented yet. Pure calc utilities exist in backend/calc/engine.py.
+- Backend: Python 3.12. Django/DRF are scaffolded; minimal project exists with health endpoint and env-driven settings. Domain apps and APIs for M1.2–M3 are pending implementation. Pure calc utilities exist in backend/calc/engine.py.
 - Frontend: React + Vite + TypeScript scaffold present; basic Sheet and Gantt pages exist but are not wired to a backend API.
 - Tooling decisions (from README):
   - Python: black, ruff, isort via pre-commit
   - JS/TS: eslint, prettier via pre-commit mirrors
-  - Dependency mgmt for Python: pip-tools (requirements.in/lock via pip-compile) — to be introduced in later milestones.
+  - Dependency mgmt for Python: pip-tools (requirements.in/lock via pip-compile)
 - Deploy: docker-compose and nginx stubs exist in deploy/.
 
 Build and configuration
 1) Python toolchain (backend)
 - Version: Python 3.12 (see backend/pyproject.toml configuration for tools).
-- Virtualenv: optional for now; there are no runtime dependencies yet. If you set up one, use Python 3.12 to avoid tooling mismatches.
+- Virtualenv: optional for now. If you set up one, use Python 3.12 to avoid tooling mismatches.
 - Code style tools configured in pyproject:
-  - black (line-length 100), isort (profile black), ruff (E, F, I, UP, B, SIM). These are intended to run via pre-commit.
+  - black (line-length 100), isort (profile black), ruff (E, F, I, UP, B, SIM). Run via pre-commit.
 - Pre-commit hooks:
   - Install: pipx install pre-commit (or pip install pre-commit)
   - Activate: pre-commit install
   - Run manually: pre-commit run -a
 
 2) Frontend toolchain
-- Skeleton only; Node will be needed in a later milestone (M6). No install/build required at this stage.
+- Skeleton only; Node will be needed in M6+. No install/build required for M1.2–M3.
 
 3) Namespace package layout note
-- The backend directory uses Python implicit namespace packages (no __init__.py). This is intentional to keep the bootstrap minimal. It affects test discovery (see Testing section) and import mechanics when running modules.
+- The backend directory uses Python implicit namespace packages (no __init__.py). This affects test discovery (see Testing) and imports.
 
 Testing
-At this milestone we can test pure functions in backend/calc/engine.py without Django. Prefer Python’s built-in unittest to avoid new dependencies.
+- For M1.2–M3, prioritize unit tests for pure calc and minimal Django model validation where feasible, using Python’s built-in unittest. Avoid introducing pytest for now.
 
 Quick start: running tests
 - Module-based invocation (works with implicit namespace packages):
   python3 -m unittest backend.tests.test_engine -v
 
-- Discovery invocation can miss tests because tests/ is not a package. If you want discovery:
-  - Option A (recommended later): add __init__.py to backend and backend/tests to make them packages; then run:
-      python3 -m unittest discover -s backend -p 'test_*.py' -v
-    Note: This changes package semantics for the repo; avoid until the team agrees.
-  - Option B: keep module-based invocation (above) for now.
+- Discovery can miss tests because tests/ is not a package. If you want discovery later, convert to packages first.
 
 Adding tests
-- Location: place tests under backend/tests/ with filenames test_*.py.
-- Imports: import from backend.calc.engine since backend is a namespace package.
-- Example template:
-  # backend/tests/test_engine_example.py
-  import unittest
-  from datetime import date
-  from backend.calc.engine import compute_duration
+- Location: backend/tests/ with filenames test_*.py.
+- Imports: import from backend.calc.engine or from Django apps using the fully-qualified path (e.g., backend.users.models) once created.
+- Example template remains the same as before.
 
-  class TestEngineExample(unittest.TestCase):
-      def test_duration(self):
-          self.assertEqual(compute_duration(date(2025, 1, 1), date(2025, 1, 11)), 10)
-
-  if __name__ == '__main__':
-      unittest.main()
-
-- Run (module target):
-  python3 -m unittest backend.tests.test_engine_example -v
-
-What we validated
-- We created and successfully executed a sample test file for backend/calc/engine.py using the module-based runner. The test covered:
-  - compute_duration (normal and end-before-start cases)
-  - compute_npt_pct (bounds and zero-duration behavior)
-  - compute_costs (base + extras and non-negative guards)
-  - estimate_eta (max date and empty input)
-  - run_all_metrics placeholder contract (ok flag and metrics key)
-- The test suite passed under Python 3.12 with no external dependencies.
-
-Guidelines for future test expansion
-- Keep tests pure for backend/calc until Django is scaffolded (M1+). Avoid mocking Django unless the project structure is promoted to a real Django app.
-- Prefer deterministic inputs and avoid timezone/date coupling; use datetime.date for calc functions.
-- Maintain tests close to the domain (docs/SPEC-002-Drilling Campaign Tracker.md) and encode edge cases found in the spec.
+Milestone-specific guidance (this task)
+- M1.2 (Base apps and data model):
+  - Create Django apps: users, core, scheduling, calc (models-only for calc). Keep apps minimal (apps.py, models.py, admin.py).
+  - Implement models per spec with clear enums and indexes. Prefer PostgreSQL-friendly fields but keep SQLite compatibility for local dev.
+  - Add initial migrations; do not add business logic beyond field constraints.
+  - Register models in admin for visibility. Seed minimal fixtures if time allows.
+- M2 (AuthZ and Audit):
+  - Use Django’s session auth locally. Define role choices on User (Viewer, Editor, Admin) and basic DRF permission classes mapping to roles.
+  - Implement AuditLog via model signals capturing before/after snapshots for create/update/delete with user attribution where available.
+- M3 (Core APIs):
+  - Implement read/write DRF viewsets for core entities with list/retrieve/create/update/destroy. Add basic filtering, pagination, and validation hooks.
+  - Keep permissions simple: Viewer = read-only; Editor/Admin = write.
 
 Code quality and conventions
 - Python
   - Formatting: black (line length 100)
   - Imports: isort (profile black)
   - Linting: ruff (E, F, I, UP, B, SIM enabled)
-  - Typing: code uses modern typing (from __future__ import annotations). Preserve annotations on new functions.
-  - Namespaces: prefer flat modules for pure calc; keep side-effect-free imports (no I/O, no network) in calc layer.
+  - Typing: use modern typing (from __future__ import annotations). Preserve annotations on new functions and models.
+  - Namespaces: prefer flat modules for pure calc; keep side-effect-free imports in calc.
 
-- JavaScript/TypeScript (planned)
-  - ESLint + Prettier via pre-commit mirrors when frontend is scaffolded in M6. Until then, no npm/node steps are required.
+- JavaScript/TypeScript
+  - ESLint + Prettier via pre-commit mirrors. No additional node steps needed for M1.2–M3.
 
 Local dev workflow tips
 - Keep backend and frontend decoupled until API contracts stabilize. For calc changes, only touch backend/calc/* and tests under backend/tests/.
 - When upgrading tooling, ensure pre-commit hooks still run on Python 3.12 and that ruff/black versions remain compatible with pyproject settings.
-- If adding pytest later, set testpaths = ["backend/tests"] and pythonpath to project root, or add a minimal conftest.py; but avoid introducing new deps until the milestone plans call for it.
 
 Troubleshooting
 - ImportError for backend.calc.engine during tests:
-  - Ensure you run from the repo root, and use module-based unittest invocation (python3 -m unittest backend.tests.test_... ). This leverages implicit namespace packages.
+  - Run from the repo root, and use module-based unittest invocation.
 - NO TESTS RAN using discover:
-  - This is expected without package __init__.py files. Use module-based invocation or convert tests dir into a package.
+  - Expected without package __init__.py. Use module invocation or convert tests dir into a package.
 
 Changelog for this guideline file
 - 2025-08-27: Initial guidelines, validated sample unittest for calc engine, documented namespace/discovery caveats and dev tooling configuration.
 - 2025-08-27: Updated Python version references to 3.12 and aligned tool target versions.
-- 2025-08-28: Updated context snapshot per TODO/SPEC: backend minimal Django scaffolding exists; frontend Sheet/Gantt scaffolds present; clarified test import path docs link.
+- 2025-08-28: Updated context snapshot per TODO/SPEC: backend minimal Django scaffolding exists; frontend Sheet/Gantt scaffolds present.
+- 2025-08-29: Updated to include M1.2–M3 execution guidance for this task.

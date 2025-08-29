@@ -73,7 +73,7 @@ Key planned files:
   - Users/core/scheduling 0001_initial created on 2025-08-29; apply with: python backend/manage.py migrate
 - [x] M1.2.5 Register models in Django admin for visibility
   - Admins added for users.User, core.Field/Platform/Rig/Well/MaintenanceWindow/AuditLog, scheduling.Scenario/Project/Campaign/CampaignProject/CalcRun; with basic list_display, filters, search.
-- [ ] M1.2.6 Create initial superuser for local testing
+- [x] M1.2.6 Create initial superuser for local testing
   - Plan: run python backend/manage.py createsuperuser; or set DJANGO_SUPERUSER_USERNAME, EMAIL, PASSWORD and run python backend/manage.py createsuperuser --noinput (documented below).
 - [ ] M1.2.7 Seed minimal sample fixtures for fields/platforms/wells/rigs/projects/campaigns/maintenance-windows
   - Plan: add JSON fixtures under backend/core/fixtures/ and backend/scheduling/fixtures/ with a small coherent dataset; load via loaddata. Include one Scenario, one Rig campaign, 3 Projects across a Platform/Well with a MaintenanceWindow overlapping one project to test clashes.

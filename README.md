@@ -76,6 +76,8 @@ For a database that matches Django models (FKs, constraints, indexes) and loads 
 
 Tips:
 - You can export CREATE_SUPERUSER=1 to let the script create an admin user, or later run `python3 backend/manage.py createsuperuser`.
+- Alternatively, to automatically create a superuser if none exists, run: `python3 backend/manage.py create_initial_superuser`.
+  - Non-interactive via env: set DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD in backend/.env and run `python3 backend/manage.py createsuperuser --noinput`.
 - Use `python3 backend/manage.py load_dump --dry-run` to validate without writing (transaction rollback).
 
 ## Frontend Dev (M6 skeleton)
