@@ -9,4 +9,4 @@ python:
 
 # Optional: default test command for this repo (uses the configured python)
 commands:
-  test: "-m unittest backend.tests.test_engine -v"
+  test: "-m pytest"
