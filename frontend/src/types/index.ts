@@ -42,7 +42,7 @@ export interface CampaignWell {
   planned_end: string;
   actual_start?: string;
   actual_end?: string;
-  dependencies: Record<string, any>;
+  dependencies: Record<string, unknown>;
   // Joined data for display
   campaign?: Campaign;
   well?: Well;
@@ -53,8 +53,8 @@ export interface CalcRun {
   id: string;
   scenario_id: string;
   status: 'Pending' | 'Running' | 'Success' | 'Failed';
-  params: Record<string, any>;
-  results: Record<string, any>;
+  params: Record<string, unknown>;
+  results: Record<string, unknown>;
   created_by: string;
   created_at: string;
   completed_at?: string;
@@ -66,8 +66,8 @@ export interface AuditLog {
   entity: string;
   entity_id: string;
   action: 'Create' | 'Update' | 'Delete';
-  before: Record<string, any>;
-  after: Record<string, any>;
+  before: Record<string, unknown>;
+  after: Record<string, unknown>;
   at: string;
 }
 
@@ -80,5 +80,5 @@ export interface GridColumn {
   filter?: boolean;
   editable?: boolean;
   cellRenderer?: string;
-  valueFormatter?: (params: any) => string;
+  valueFormatter?: (params: { value: unknown }) => string;
 }

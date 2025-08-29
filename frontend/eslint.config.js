@@ -16,7 +16,9 @@ export default [
       sourceType: 'module',
       parser: typescriptParser,
       globals: {
-        ...globals.browser
+        ...globals.browser,
+        RequestCredentials: 'readonly',
+        RequestInit: 'readonly'
       }
     },
     plugins: {

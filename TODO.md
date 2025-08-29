@@ -94,7 +94,7 @@ Key planned files:
 
 ### M3 — Sheet-Like UI Foundation (PRIORITY 2 - MVP Phase 1)
 
-- [ ] M3.1 Create TypeScript API client with proper error handling
+- [x] M3.1 Create TypeScript API client with proper error handling
 - [ ] M3.2 Build type definitions matching backend models
 - [ ] M3.3 Implement CRUD operations for all entities in API client
 - [ ] M3.4 Create base AG Grid components with proper configuration
@@ -150,9 +150,9 @@ Key planned files:
 - [x] M9.1.1 Set up Vite + React + TypeScript project with package.json and dependencies
 - [x] M9.1.2 Configure Vite build system and development server
 - [x] M9.1.3 Set up project structure with components, hooks, utils, and types directories
-- [ ] M9.1.4 Create API client with fetch wrapper and base configuration
-- [ ] M9.1.5 Add error mapping and response handling utilities
-- [ ] M9.1.6 Create TypeScript types for API responses and requests
+- [x] M9.1.4 Create API client with fetch wrapper and base configuration
+- [x] M9.1.5 Add error mapping and response handling utilities
+- [x] M9.1.6 Create TypeScript types for API responses and requests
 
 #### M9.2 — Sheet View Implementation (PRIORITY 2)
 - [x] M9.2.1 Set up AG Grid component with basic configuration and data source

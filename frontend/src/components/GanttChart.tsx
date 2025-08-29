@@ -39,36 +39,37 @@ export default function GanttChart({
   height,
 }: GanttChartProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const ganttRef = useRef<any>(null);
+  const ganttRef = useRef<unknown>(null);
 
   useEffect(() => {
     let isCancelled = false;
+    const container = containerRef.current;
 
     async function mount() {
       const mod = await import("frappe-gantt");
       if (isCancelled) return;
 
       // Clear previous chart if any
-      if (ganttRef.current && (ganttRef.current as any).svg) {
+      if (ganttRef.current && (ganttRef.current as { svg?: unknown }).svg) {
         // Remove old SVG/content
-        if (containerRef.current) containerRef.current.innerHTML = "";
+        if (container) container.innerHTML = "";
       }
 
-      const Gantt = (mod as any).default ?? (mod as any);
-      if (!containerRef.current) return;
+      const Gantt = (mod as unknown as { default?: new (...args: unknown[]) => unknown }).default ?? (mod as unknown as new (...args: unknown[]) => unknown);
+      if (!container) return;
 
-      const instance = new Gantt(containerRef.current, tasks, {
+      const instance = new Gantt(container, tasks, {
         view_mode: viewMode,
         custom_popup_html: null,
-        on_click: (task: any) => onClickTask?.(task),
-        on_date_change: (task: any, start: Date, end: Date) => onDateChange?.(task, start, end),
-        on_progress_change: (task: any, progress: number) => onProgressChange?.(task, progress),
+        on_click: (task: GanttTask) => onClickTask?.(task),
+        on_date_change: (task: GanttTask, start: Date, end: Date) => onDateChange?.(task, start, end),
+        on_progress_change: (task: GanttTask, progress: number) => onProgressChange?.(task, progress),
       });
 
       ganttRef.current = instance;
 
-      if (height && containerRef.current?.firstElementChild instanceof HTMLElement) {
-        containerRef.current.firstElementChild.style.height = `${height}px`;
+      if (height && container?.firstElementChild instanceof HTMLElement) {
+        container.firstElementChild.style.height = `${height}px`;
       }
     }
 
@@ -77,11 +78,11 @@ export default function GanttChart({
     return () => {
       isCancelled = true;
       // Clean up DOM on unmount
-      if (containerRef.current) containerRef.current.innerHTML = "";
+      if (container) container.innerHTML = "";
       ganttRef.current = null;
     };
     // Recreate chart when tasks or view mode change
-  }, [JSON.stringify(tasks), viewMode, onClickTask, onDateChange, onProgressChange, height]);
+  }, [tasks, viewMode, onClickTask, onDateChange, onProgressChange, height]);
 
   return <div className={className} ref={containerRef} />;
 }
